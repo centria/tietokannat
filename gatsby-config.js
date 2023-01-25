@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
-    title: 'Template',
-    name: 'Template',
+    title: 'Tietokannat',
+    name: 'Tietokannat',
     description:
       'This is my description that will be used in the meta tags and important for search results',
   },
@@ -67,5 +67,5 @@ module.exports = {
     'gatsby-plugin-react-helmet',
     'gatsby-plugin-image',
   ],
-  pathPrefix: '/databases',
+  pathPrefix: '/tietokannat',
 }
