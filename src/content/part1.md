@@ -4,35 +4,37 @@ nav_order: 3
 hidden: false
 ---
 
-# What is a database?
+# Mikä on tietokanta?
 
-A *database* is an organized collection of data, generally stored and accessed electronically from a computer system. We can perform *queries* on them and change their content. For example the following are databases:
+Tietokanta *(database)* on tietokoneella oleva kokoelma tietoa, johon voidaan suorittaa hakuja ja jonka sisältöä voidaan muuttaa. Tietokantoja ovat esimerkiksi:
 
-* Usernames and passwords of web pages
-* Products and storage status of a web store
-* Banks' information about their customers and their accounts
-* Daily weather measurements in different locations
-* Flight schedules and booking status for airlines
+* nettisivuston käyttäjärekisteri
+* verkkokaupan tuotteet ja varastotilanne
+* pankin tiedot asiakkaista ja tilitapahtumista
+* päivittäin mitatut säätiedot eri paikoissa
+* lentoyhtiön lentoaikataulut ja varaustilanne
 
-There are a vast amount of databases, and most people are in contact with multiple databases during an ordinary day.
+Tietokantoja on nykyään valtavasti, ja useimmat ihmiset ovat tavallisen päivän aikana yhteydessä lukuisiin tietokantoihin.
 
-## Challenges for databases
+## Tietokantojen haasteet
 
-There are several technical difficulties conserning databases, and it is not easy to build a well functioning database. The most common challenges are:
+Tietokantojen tekniseen toteutukseen liittyy monia haasteita, eikä hyvin toimivan tietokannan toteuttaminen ole helppo tehtävä. Keskeisiä haasteita ovat:
 
-## Amount of information
+## Tiedon määrä (Amount of information)
 
-Many databases hold large quantities of information, into which multiple queries and changes are made constantly. How to make the database in such a way, that the information can be accessed efficiently?
+Monessa tietokannassa on suuri määrä tietoa, johon kohdistuu jatkuvasti hakuja ja muutoksia. Miten toteuttaa tietokanta niin, että tietoon pääsee käsiksi tehokkaasti?
 
-## Concurrency
+## Samanaikaisuus (Concurrency)
 
 Usually a database has multiple users, who can change and get information at the same time. Why do we have to take this into account, when designing our database?
 
-## Surprises
+## Yllätykset (Surprises)
 
-The database should stay coherent in surprising situations, as well. For example, what happens if the power goes out when the data is being changed?
+Tietokannan sisällön tulisi säilyä järkevänä myös yllättävissä tilanteissa. Esimerkiksi mitä tapahtuu, jos sähköt katkeavat juuri silloin, kun tietoa ollaan muuttamassa?
 
-# Developing databases
+# Tietokantojen kehitys
+
+<Note>TÄHÄN PÄÄSTIIN</Note>
 
 The development of databases took flight in 1970's and there were multiple different solutions, but one became the most popular: relational model and the **S**tructural **Q**uery **L**anguage, **SQL**. The relational databases have been popular since then, and most of the databases are still based on relational database models.
 
