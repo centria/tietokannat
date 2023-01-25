@@ -27,8 +27,8 @@ const Layout = ({ children, tableOfContents, location }) => {
         )}
         <Footer>
           <p>
-            © {new Date().getFullYear()}, Built with
-            <a href='https://web.centria.fi/'> Centria</a>
+            © {new Date().getFullYear()}, Julkaisija
+            <a href='https://net.centria.fi/'> Centria</a>
           </p>
           <p>
             Lisää tietoa <Link to='/lisenssi'>Lisenssistä</Link>
