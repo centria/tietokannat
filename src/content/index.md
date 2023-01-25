@@ -38,8 +38,8 @@ Read next about the [exercises and exam](exercises).
 
 You do not need to install anything on your computer. However, some parts of the material use SQLite in the examples. It is voluntary to download and install, and can be found from here: [SQLite Download page](https://www.sqlite.org/download.html)
 
-You need to have a `MOOC.fi account` for submitting the exercises. You can read the instructions from here: [https://www.mooc.fi/en/installation/vscode/#mooc.fi-create-account](https://www.mooc.fi/en/installation/vscode/#mooc.fi-create-account). *If you have one already, use your existing one.*
+Tarvitset `MOOC.fi käyttäjätunnuksen` tehtävien palauttamiseen. Löydät ohjeet täältä: [https://www.mooc.fi/installation/vscode/#mooc.fi-tunnuksen-luominen](https://www.mooc.fi/installation/vscode/#mooc.fi-tunnuksen-luominen). *Jos sinulla on jo käyttäjätunnus, voit käyttää sitä.*
 
-## Errors in the material?
+## Virheitä materiaalissa?
 
-Did you find an error? A typo perhaps? Please make a pull request at [GitHub](https://github.com/centria/databases/tree/master/src/content) and help us make the material better!
+Löysitkö virheen tai kirjoitusvirheen? Tee pull request osoitteeseen [GitHub](https://github.com/centria/tietokannat/tree/master/src/content) ja auta meitä parantamaan materiaalia!
