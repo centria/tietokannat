@@ -1,5 +1,5 @@
 ---
-title: "Designing databases"
+title: "Tietokantojen suunnittelua"
 nav_order: 7
 hidden: false
 ---

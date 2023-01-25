@@ -1,5 +1,5 @@
 ---
-title: "Efficiency"
+title: "Tehokkuus"
 nav_order: 9
 hidden: false
 ---

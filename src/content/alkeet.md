@@ -1,5 +1,5 @@
 ---
-title: "SQL Basics"
+title: "SQL:n alkeet"
 nav_order: 4
 hidden: false
 ---

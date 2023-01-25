@@ -1,5 +1,5 @@
 ---
-title: "More techniques"
+title: "Lisää tekniikoita"
 nav_order: 6
 hidden: false
 ---

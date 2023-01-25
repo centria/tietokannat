@@ -1,5 +1,5 @@
 ---
-title: "Multible tables"
+title: "Monta taulua"
 nav_order: 5
 hidden: false
 ---
