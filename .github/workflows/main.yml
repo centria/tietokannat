@@ -1,0 +1,56 @@
+name: Publish on Github Pages
+
+on:
+  push:
+    branches:
+      - master
+
+  pull_request:
+    branches: [master]
+    types: [opened, synchronize]
+
+jobs:
+  deployment_pipeline:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: src
+
+    env:
+      SKIP_COMMITS: ${{ !contains(join(toJson(github.event.commits.*.message), ', '), '#skip') }}
+
+    steps:
+      - uses: actions/checkout@v3.1.0
+
+      - uses: actions/setup-node@v3.6.0
+        with:
+          node-version: '12.x'
+      - name: npm install
+        run: npm install
+
+      - name: lint
+        run: npm run eslint
+
+      - uses: enriikke/gatsby-gh-pages-action@v2
+        if: ${{ github.event_name == 'push' && env.SKIP_COMMITS }}
+        with:
+          access-token: ${{ secrets.TEMPLATE_API }}
+          deploy-branch: gh-pages
+          gatsby-args: --prefix-paths
+
+      - uses: actions/checkout@v3.1.0
+        if: ${{ github.event_name == 'push' && env.SKIP_COMMITS }}
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@8c8163ef62cf9c4677c8e800f36270af27930f42
+        if: ${{ github.event_name == 'push' && env.SKIP_COMMITS }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          DRY_RUN: false
+          WITH_V: true
+          INITIAL_VERSION: 0.0.1
+          TAG_CONTEXT: repo
+          RELEASE_BRANCHES: master
+          SOURCE: .
+          VERBOSE: true
