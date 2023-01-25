@@ -21,7 +21,7 @@ jobs:
       SKIP_COMMITS: ${{ !contains(join(toJson(github.event.commits.*.message), ', '), '#skip') }}
 
     steps:
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
 
       - uses: actions/setup-node@v3.6.0
         with:
@@ -39,7 +39,7 @@ jobs:
           deploy-branch: gh-pages
           gatsby-args: --prefix-paths
 
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.3.0
         if: ${{ github.event_name == 'push' && env.SKIP_COMMITS }}
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@8c8163ef62cf9c4677c8e800f36270af27930f42
