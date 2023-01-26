@@ -37,7 +37,7 @@ export const Exercise = ({ title, children }) => {
 export const Note = ({ children }) => {
   return (
     <NoteContainer>
-      <NoteTitle>Note!</NoteTitle>
+      <NoteTitle>Huom!</NoteTitle>
       {children}
     </NoteContainer>
   )
