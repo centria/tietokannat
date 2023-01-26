@@ -6,6 +6,10 @@ hidden: false
 
 # Mikä on tietokanta?
 
+<Note>Materiaalissa on usein mainittuna termien englanninkieliset selitykset, ja kurssin tehtävät ovat englanniksi.
+
+Tämä siksi, että lähes kaikki dokumentaatio aiheesta on englanniksi, sekä itse SQL-kieli pohjaavat englantiin.</Note>
+
 Tietokanta *(database)* on tietokoneella oleva kokoelma tietoa, johon voidaan suorittaa hakuja ja jonka sisältöä voidaan muuttaa. Tietokantoja ovat esimerkiksi:
 
 * nettisivuston käyttäjärekisteri
@@ -146,17 +150,15 @@ Nyt Maija on menettänyt 50 euroa ja Uolevi ei saanut mitään, tai 50 euroa on 
 
 Tietokannan käsittely on hankala tehtävä, ja tällä kurssilla emme yritä saavuttaa kaikkea itse, vaan luotamme olemassaoleviin tietokantajärjestelmiin.
 
-# Relaatiomallit
+# Relaatiomallit (Relational models)
 
-<Note>TÄHÄN PÄÄSTIIN</Note>
+Relaatiomallit korvasivat kilpailijansa 1970-luvulla ja ovat hallinneet tietokantojen maailmaa siitä lähtien. Malli perustuu kahteen perusideaan: kaikki data tallennetaan *riveihin* (row) jotka voivat *viitata* (reference) toisiinsa, ja tietokannan käyttäjä käsittelee tietoa *SQL* kielellä, joka piilottaa tietokannan sisäiset yksityiskohdat käyttäjältä.
 
-Relational models replaced their competitors in the 1970's and has ruled the database world ever since. The model is based on two basic concepts: all the data is stored in the database as *rows*, which can *reference* to one another, and the database user handles information with *SQL* language, which hides the internal details of the database from the user.
+## Tietokannan rakenne (Database structure)
 
-## Database structure
+Relaatiomallissa tietokanta muodostuu *tauluista* (*table*), joissa on kiinteät *sarakkeet* (*column*). Tauluihin tallennetaan tietoa *riveinä* (*row*), joilla on tietyt arvot sarakkeissa. Jokaisessa taulussa on kokoelma tiettyyn asiaan liittyvää tietoa.
 
-Relational database consists of *tables* which have fixed *columns*. The data is stored in the tables as *rows*, which have certain values in the columns. Each table contains information related to a certain collection.
-
-In the following tables we have an example of a database, which could be used as a part of a web store. In the tables `Products`, `Customers` and `Purchases` we have information about products, customers and their shopping carts.
+Seuraavassa taulussa meillä on esimerkki tietokannasta, joka voisi olla osa verkkokauppaa. Tauluissa `Products`, `Customers` ja `Purchases` meillä on tietoa tuotteista, käyttäjistä ja heidän ostoskoreistaan.
 
 ```
  Products 
@@ -186,39 +188,43 @@ In the following tables we have an example of a database, which could be used as
 ```
 
 
-In the tables `Products` and `Customers` each row has a unique *id* number, with which they can be referenced at. Because of this, the table `Purchases` we can represent in number form, which items which customer has chosen. In this example, Uolevi has carrots and celery in their basket, and Maija har redish, turnip and celery in theirs.
+Tauluissa `Products` ja `Customers` jokaisella rivillä on uniikki *id* numero, joilla niihin voidaan viitata. Tämän takia taulussa `Purchases`  voimme esittää numeerisesti, minkä esineen kukin asiakas on valinnut. Tässä esimerkissä Uolevilla on porkkanoita ja selleriä korissaan, ja Maijalla on retiisi, turnipsi ja selleri omassaan.
 
-## SQL Language
+## SQL-kieli
 
-The *Structured Query Language* or *SQL* is an established way to handle data in relational databases. The language as commands, with which each database user (for example the programmer or software using the database) can add, search, change and remove information.
+*Structured Query Language* tai *SQL* on vakiintunut tapa käsitellä tietokannan sisältöä. Kielessä on komentoja (commands), joiden avulla tietokannan käyttäjä (esimerkiksi tietokantaa käyttävä ohjelmoija) voi lisätä, hakea, muuttaa ja poistaa tietoa.
 
-SQL commands are formed with *keywords* such as `SELECT` and `WHERE`, names of tables and columns and other values. For example, the following command
+SQL-komennot muodostuvat *avainsanoista* (*keywords*) kuten `SELECT` ja `WHERE`, taulujen ja sarakkeiden nimistä sekä muista arvoista. Esimerkiksi komento
 
 ```sql
 SELECT price FROM Products WHERE name='radish';
 ```
 
-Fetches the price for radish from the database described above. The command end with a semicolon `;` and we can use whitespace and linebreaks the way we want. For example, we could write the command above like this as well:
+hakee tietokannan tuotteista retiisin hinnan. Komentojen lopussa on puolipiste `;` ja voimme käyttää välilyöntejä ja rivinvaihtoja haluamallamme tavalla. Esimerkiksi voisimme kirjoittaa äskeisen komennon myös näin usealle riville:
 
 
 ```sql
-SELECT price 
-FROM Products 
-WHERE name='radish';
+SELECT 
+    price 
+FROM 
+    Products 
+WHERE 
+    name='radish';
 ```
 
-As SQL is from the ages of old, it has plenty of resemblance to the programming of that time. For example
+Koska SQL on luotu menneinä aikoina, siinä on paljon viitteitä sen aikaiseen ohjelmointiin. Esimerkiksi
 
-* The keywords are complete English words, and the commands resemble English sentences
-* The keywords are not casesensitive. For example, `SELECT`, `select` and `SeLeCT` are all the same. The keywords are usually written with all capital letters.
-* The equality sign `=` means both equality and setting a value (and `== ` is not used at all).
+* Avainsanat ovat kokonaisia englannin kielen sanoja, ja komennot muistuttavat englannin kielen lauseita.
+* Avainsanoissa kirjainkoolla ei ole väliä. Esimerkiksi `SELECT`, `select` ja `SeLeCT` tarkoittavat samaa. Avainsanat on tapana kirjoittaa kokonaan suurilla kirjaimilla.
+* Yhtäsuuruusmerkki `=` tarkoittaa sekä asetusta että yhtäsuuruusvertailua (ja `==` ei käytetä lainkaan).
 
-SQL language has a *standard*, which aims to give common base for the langauge. In practice every implementation does something their own way. We try ton concentrate on the properties which are common for all SQL databases.
 
-## Internal structure of a database
+SQL-kielestä on olemassa *standardeja*, jotka pyrkivät antamaan yhteisen pohjan kielelle. Käytännössä jokainen SQL-kielen toteutus toimii kuitenkin hieman omalla tavallaan. Tällä kurssilla keskitymme SQL:n ominaisuuksiin, jotka ovat yleisesti käytettävissä eri tietokannoissa.
 
-Between the user and the database there is a *relational database management system*, whose function is to handle the SQL commands from the user. For example when the user gives a command which retrieves information from the database, the database system has to find a good way to handle the command and deliver the results back to the user as fast as possible.
+## Tietokannan sisäinen rakenne
 
-The nice idea behind SQL is that the user only has to *describe* what information they want, and the database system does all the work and fetches the information from the database. This is convenient for the user, because they don't have to know anything about the internal functionality but can rely on the database system to function.
+Käyttäjän ja tietokannan välissä on *tietokantajärjestelmä* (*relational database management system*), jonka tehtävänä on käsitellä käyttäjän antamat SQL-komennot. Esimerkiksi kun käyttäjä antaa komennon, joka hakee tietoa tietokannasta, tietokantajärjestelmän tulee löytää jokin hyvä tapa käsitellä komento ja toimittaa tulokset takaisin käyttäjälle mahdollisimman nopeasti.
 
-Designing a database system is a complex task, and only those really interested are aware of the internal details of database systems. Most of this is outside the scope of this course, but we'll have a glimpse of that in parts 6 and 7.
+SQL-kielen hienoutena on, että käyttäjän riittää *kuvailla*, mitä tietoa hän haluaa, minkä jälkeen tietokantajärjestelmä hoitaa likaisen työn ja hankkii tiedot tietokannan uumenista. Tämä on mukavaa käyttäjälle, koska hänen ei tarvitse tietää mitään tietokannan sisäisestä toiminnasta vaan voi luottaa tietokantajärjestelmään.
+
+Tietokantajärjestelmän toteuttaminen on vaikea tehtävä, ja yleensä vain asiaan erikseen perehtyneet ovat tietoisia tietokannan sisäisestä toiminnasta. Tämä on pääasiassa kurssimme tavoitteiden ulkopuolella, mutta vilkaistaan niitä vähän kurssin loppupuolella.
