@@ -76,23 +76,22 @@ Ideana siis on, että jokainen siirto lisää kolme riviä tiedoston loppuun, jo
 
 ## "Tein itse ja säästin?"
 
-<Note>TÄHÄN PÄÄSTIIN</Note>
+Tällainen tietokanta toimii hyvin, jos oletamme pankilla olevan vain muutama asiakas ja tapahtuma, ja vain yksi asiakas kerrallaan käyttää pankkia, eikä tietokoneet koskaan temppuile. Valitettavasti tämä ei useinkaan ole totta.
 
-This kind of a database works fine, if we can assume the bank having only a few customers and transaction, and only one customer uses the bank at a time and the computer is always reliable. Unfortunately, this is usually not the case.
+## Tiedon määrä
 
-## Amount of information
+Mitä tapahtuu, jos pankilla on miljoona asiakasta, ja jokaisen asiakkaan tilillä on keskimäärin viisi tapahtumaa päivässä? Tällöin meidän tarvitsee lisätä 15 miljoonaa riviä tiedostoomme joka päivä, tai yli viisi miljardia riviä vuodessa.
 
-What happens, if the bank has a million customers, and the accounts of said customers have on average five transactions per day? This way we have to add 15 million lines to the file per day, or more than five billion lines in a year.
+Tietokantamme suunnittelussa on kriittiinen tehokkuuteen liittyvä virhe: kun haluamme tietää asiakkaan tilin saldon, meidän tarvitsee selata kaikki tiedoston rivit läpi. Kun tietokanta kasvaa, tästä tulee äärimmäisen hidasta.
 
-There is a critical design flaw conserning efficiency in our database: when we want to know the balance of a customer, we have to go through all the lines in the file. When the database grows, this becomes extremely slow.
+Käytännössä ongelmat tehokkuudessa näkyvät asiakkaille tietokantaa käyttävän ohjelmiston hitautena. Esimerkiksi tässä tapauksessa Maijan pitäisi odottaa minuutti, ennen kuin hän näkee tilinsä saldon.
 
-In practice, problems with efficiency are shown to customers as the software using the database working slowly. For example in this case, Maija would probably wais for a minute, before they could see their balance from the bank.
 
-## Concurrency
+## Samanaikaisuus
 
-Many systems work fine as long as they have only one user, but concurrent users can cause problems. What happens for example, if two users try to create accounts at the same time?
+Moni järjestelmä toimii hyvin kunhan sillä on vain yksi käyttäjä, mutta samanaikaiset käyttäjät auttavat ongelmia. Mitä tapahtuu, jos esimerkiksi yritämme luoda kaksi tiliä samaan aikaan?
 
-Let's assume we want to create accounts for Liisa and Aapeli, and write the following lines into the file:
+Oletetaan että haluamme luoda tilin Liisalle ja Aapelille, ja kirjoitamme tiedostoon seuraavat rivit:
 
 ```
 CREATE ACCOUNT
@@ -103,7 +102,7 @@ NUMBER: 111562714
 OWNER: Aapeli
 ```
 
-Alas, as two users are writing into the database at the same time, the lines could *mix up* and we could end up with the following file:
+Valitettavasti kun kaksi käyttäjää kirjoittaa tietokantaan samaan aikaan, rivit voisivat *mennä sekaisin* ja tiedostomme voisi näyttää tältä:
 
 ```
 CREATE ACCOUNT
@@ -114,13 +113,13 @@ OWNER: Aapeli
 OWNER: Liisa
 ```
 
-Now Liisa has put in the first two lines, then Aapeli all three of theirs and finally one more line from Liisa. With this it is impossible to know, which account is whose, and the data in our database is *corrupted*.
+Nyt Liisa on laittanut tietokantaan ensimmäiset kaksi riviä, sitten Aaapeli kaikki kolme riviään, ja lopulta Liisalta tulee vielä yksi rivi. Nyt on mahdotonta tietää mikä tili kuuluu kellekin, ja tietokantamme data on korruptoitunut (*corrupted*).
 
-## Suprises
+## Yllätykset
 
-One more problem is that computers can go off *at any time* (for example a power outage, someone plugs it off the socket, etc). What happens, if at exactly that point we are making changes to our database?
+Yksi lisäongelma on tietokoneiden sammuminen *koska tahansa* (esimerkiksi sähkökatko, virtajohto irtoaa seinästä, jne). Mitä tapahtuu, jos juuri sillä hetkellä teemme muutoksia tietokantaamme?
 
-Let's have the following scenario, where Maija transfers 50 euros to Uolevi:
+Tarkastellaan seuraavaa tilannetta, missä Maija siirtää Uoleville 50 euroa:
 
 ```
 MAKE TRANSACTION
@@ -131,7 +130,8 @@ ACCOUNT: 131778223
 SUM: 50
 ```
 
-However the computer dies after three lines, where only the following lines are saved:
+Tietokone kuitenkin kaatuu ensimmäisen kolmen rivin jälkeen, ja vain ne tallentuvat tietokantaan:
+
 
 ```
 MAKE TRANSACTION
@@ -139,13 +139,16 @@ ACCOUNT: 175299717
 SUM: -50
 ```
 
-Now Maija has lost 50 euros and Uolevi did not get anything, or 50 euros just *vanished* and this cannot even be seen from the file, as the power comes back.
+Nyt Maija on menettänyt 50 euroa ja Uolevi ei saanut mitään, tai 50 euroa on vain *kadonnut* ja tätä ei edes voi nähdä tiedostosta, kun kone käynnistyy uudelleen.
 
-## How do we fix this?
 
-Handling a database is a tricky task, and on this course we will not try to achieve everything ourselves, but rely on existing database systems.
+## Miten korjaamme tämän?
 
-# Relational models
+Tietokannan käsittely on hankala tehtävä, ja tällä kurssilla emme yritä saavuttaa kaikkea itse, vaan luotamme olemassaoleviin tietokantajärjestelmiin.
+
+# Relaatiomallit
+
+<Note>TÄHÄN PÄÄSTIIN</Note>
 
 Relational models replaced their competitors in the 1970's and has ruled the database world ever since. The model is based on two basic concepts: all the data is stored in the database as *rows*, which can *reference* to one another, and the database user handles information with *SQL* language, which hides the internal details of the database from the user.
 
