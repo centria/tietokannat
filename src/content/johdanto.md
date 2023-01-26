@@ -34,25 +34,23 @@ Tietokannan sisällön tulisi säilyä järkevänä myös yllättävissä tilant
 
 # Tietokantojen kehitys
 
-<Note>TÄHÄN PÄÄSTIIN</Note>
+Tietokantojen kehitys sai vauhtia 1970-luvulla jolloin vaihtoehtoja oli useita, mutta yhdestä tuli kaikkein suosituin: relaatiomalli ja **S**tructural **Q**uery **L**anguage, **SQL**. Relaatiotietokannat ovat olleet hyvin suosittuja siitä lähtien, ja suurin osa tietokannoista perustuvat edelleen relaatiotietokantamalleihin.
 
-The development of databases took flight in 1970's and there were multiple different solutions, but one became the most popular: relational model and the **S**tructural **Q**uery **L**anguage, **SQL**. The relational databases have been popular since then, and most of the databases are still based on relational database models.
+Tällä kurssille keskitymme relaatiotietokantoihin sekä tietokannan käyttäjien että teknisestä näkökulmasta. Tarkoituksena on vastata kysymykseen, *miksi* relaatiomalli on niin hyvä tapa luoda tietokantoja?
 
-In this course we will concentrate on relational database from both database users' and the technical point of view. We aim to answer the question, *why* relational model is such a good way to create a database?
+Vaikka relaatiotietokannat ovat edelleen vallalla, viimeaikoina on noussut hyviä haastajia. Yksi syistä on tarve erilaisille tietokannoille jotka ovat soveltuvampia hajautetuille järjestelmille, kuten valtaville nettisivuille.
 
-Even though relational databases are still dominant, recently some powerful challengers have risen. One reason has been the need for different kinds of databases, which are more suitable for distributed systems, such as enormous websites.
+Usein käytetty termi, *NoSQL*, viittaa tietokantoihin jotka perustuvat muuhun kuin relaatiomalliin tai SQL-kieleen. Erityisesti dokumenttitietokannat ovat olleet suosittuja viime vuosina. Vaikka keskitymmekin relaatiomalliin tällä kurssilla, on hyvä tietää muistakin vaihtoehdoista.
 
-A term often used, *NoSQL*, refers to a database based on something else than the relational model and SQL language. Especially document-oriented databases have been popular lately. Even though we concentrate on the relational model, it is good to keep in mind that alternatives exist.
+# Yksinkertainen tietokanta
 
-# Simple database
+Ennen tutustumista olemassa oleviin tietokantajärjestelmiin on hyvä miettiä, mitä tarvetta tällaisille järjestelmille on. Miksi emme voisi vain *toteuttaa tietokantaa itse* vaikkapa tallentamalla tietokannan sisällön tekstitiedostoon sopivassa muodossa?
 
-Before we start to look into existing database systems, let's try and make a database and its handling *by ourselves* in some simple way and see, what kinds of problems we run into.
+Oletetaan että haluamme luoda tietokannan pankkia varten. Tietokannan tarkoitus on on tallettaa asiakastietoja ja tilisiirtoja heidän tileillään.
 
-Let's assume we want to create a database for a bank. The purpose of the database is to store the customer information and the transactions on their accounts.
+## Tietokannan rakenne (Database structure)
 
-## Database structure
-
-We will store the database into a text file, `bank.txt`, whose lines reflect the transactions in the database. There are two different transactions: You can create a new account into the bank (the balance) or the balance of an account changes. The content of the file could be something like this:
+Tallennetaan tietokantamme tekstitiedostoon, `pankki.txt`, jonka rivit vastaavat tapahtumia tietokannassa. Meillä on kahdenlaisia tapahtumia: Voit luoda uuden tilin pankkiin tai olemassaolevan tilin saldo muuttuu. Tiedoston sisältö voisi olla vaikka seuraava:
 
 ```
 CREATE ACCOUNT
@@ -72,11 +70,13 @@ ACCOUNT: 175299717
 SUM: 100
 ```
 
-In this case we have created accounts in the bank for Maija and Uolevi. After this 500 euros are transferred into Uolevi's account. Then Uolevi transfers 100 euros into Maija's account (so Uolevi's balance is decreased by 100 and Maija's saldo is increased by 100). In the end, Uolevi's balance is 400 and Maija's balance is 100.
+Tässä tapauksessa olemme luoneet tilit Maijalle ja Uoleville. Tämän jälkeen Uolevin tilille siirretään 500 euroa. Seuraavaksi Uolevi siirtää 100 euroa Maijan tilille (eli Uolevin saldo laskee 100:lla ja Maijan saldo nousee vastaavasti 100:lla). Lopussa Uolevin saldo on 400 ja Maijan on 100 euroa.
 
-The idea is, that with each transaction we add three lines into to the end of the file, which represent the transaction. When we read through the lines of the file, we know all the accounts in the bank and we can calculate the current balance for them all.
+Ideana siis on, että jokainen siirto lisää kolme riviä tiedoston loppuun, jotka yhdessä vastaavat tilitapahtumaa. Kun luemme tiedoston rivit, saamme selville kaikkien tilien tiedot ja pystymme laskemaan ajantasaiset saldot kaikille.
 
-## I did it myself and saved?
+## "Tein itse ja säästin?"
+
+<Note>TÄHÄN PÄÄSTIIN</Note>
 
 This kind of a database works fine, if we can assume the bank having only a few customers and transaction, and only one customer uses the bank at a time and the computer is always reliable. Unfortunately, this is usually not the case.
 
