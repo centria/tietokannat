@@ -9,7 +9,7 @@ hidden: false
 <Note>
 Materiaalissa on usein mainittuna termien englanninkieliset selitykset, ja kurssin tehtävät ovat englanniksi.
 
-Tämä siksi, että lähes kaikki dokumentaatio aiheesta on englanniksi, sekä itse SQL-kieli pohjaavat englantiin.
+Tämä siksi, että lähes kaikki dokumentaatio aiheesta on englanniksi, sekä itse SQL-kieli pohjaa englantiin.
 </Note>
 
 Tietokanta *(database)* on tietokoneella oleva kokoelma tietoa, johon voidaan suorittaa hakuja ja jonka sisältöä voidaan muuttaa. Tietokantoja ovat esimerkiksi:

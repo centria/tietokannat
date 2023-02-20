@@ -6,37 +6,41 @@ hidden: false
 
 # Basic commands
 
-Next we will familiarize ourselves with the basic SQL commands. With these commands we add, search, change and delete contents from the database. Usually the combination of these commands are known with other names, however. **C**reate, **R**ead, **U**pdate and **D**elete, or **CRUD**, forms the basic functionality of database usage, especially in documentation.
+Tässä luvussa tutustumme tavallisimpiin SQL-komentoihin, joiden avulla voimme lisätä, hakea, muuttaa ja poistaa tietokannan sisältöä. Nämä komennot muodostavat perustan tietokannan käyttämiselle. Yleisesti alalla näitä toimintoja kutsutaan englaninninkielisillä nimillä.  **C**reate, **R**ead, **U**pdate and **D**elete, eli lyhenteenä **CRUD**, muodostavat tietokannan perustoiminnot, erityisesti dokumentaatiossa.
 
-## Creating a table
+## Taulun luonti
 
-The command `CREATE TABLE` indeed creates a table, with the desired columns. For example the following command creates the table `Products` with three columns:
+Komento `CREATE TABLE` luo taulun, jossa on halutut sarakkeet. Esimerkiksi seuraava komento luo taulun `Products`, jossa on kolme saraketta:
+
 
 ```sql
 CREATE TABLE Products (id INTEGER PRIMARY KEY, name TEXT, price INTEGER);
 ```
 
-We can name the table and the columns the way we want. Common practice (at least for this course) is, that the tables are written with capital first letter and in plural, and columns with small first letter and in singular form.
+Voimme nimetä taulun ja sarakkeet haluamallamme tavalla. Tällä kurssilla käytäntönä on, että kirjoitamme taulun nimen suurella alkukirjaimella ja monikkomuotoisena. Sarakkeiden nimet puolestaan kirjoitamme pienellä alkukirjaimella.
 
-For each column, along with the name we declare the desired type. In this table the columns `id` and `price` are *integers* (INTEGER) and the column `name`is a string (TEXT). The column `id` is also the *primary key* (PRIMARY KEY) for the table. This means it creates an identification for each row in the table and with it we can easily refer to any row.
+Jokaisesta sarakkeesta ilmoitetaan nimen lisäksi tyyppi. Tässä taulussa sarakkeet `id` ja `price` ovat kokonaislukuja (INTEGER) ja sarake `name` on merkkijono (TEXT). Sarake `id` on lisäksi taulun pääavain (PRIMARY KEY), mikä tarkoittaa, että se yksilöi jokaisen taulun rivin ja voimme viitata sen avulla kätevästi mihin tahansa riviin.
 
-## Primary key
 
-The primary key can be any column or combination of columns, which is unique to each row. In practice, a common way for a primary key is an id column with integer type.
+## Pääavain
 
-We usually want the id to have a sequential numbering. This means that when we add rows to the table, the first row gets automatically id value of 1, second gets id value of 2, and so on.
+Tietokannan taulun pääavain on jokin sarake (tai sarakkeiden yhdistelmä), joka yksilöi taulun jokaisen rivin eli millään kahdella rivillä ei ole samaa pääavainta. Käytännössä hyvin tavallinen valinta pääavaimeksi on kokonaislukumuotoinen id-numero.
 
-The implementation of this depends on the database management system. For example in SQLite database `INTEGER PRIMARY KEY` column automatically gets a sequential numbering.
+Usein haluamme lisäksi, että id-numerolla on juokseva numerointi. Tämä tarkoittaa, että kun tauluun lisätään rivejä, ensimmäinen rivi saa automaattisesti id-numeron 1, toinen rivi saa id-numeron 2, jne. 
 
-## Adding information
+Juoksevan numeroinnin toteuttaminen riippuu tietokantajärjestelmästä. Esimerkiksi SQLite-tietokannassa `INTEGER PRIMARY KEY` -tyyppinen sarake saa automaattisesti juoksevan numeroinnin.
 
-The command `INSERT` adds a new row into the table. For example the following command adds a row into the table `Products` we just created
+
+## Tiedon lisääminen
+
+Komento `INSERT` lisää uuden rivin tauluun. Esimerkiksi seuraava komento lisää rivin äsken luomaamme tauluun `Products`
 
 ```sql
 INSERT INTO Products (name,price) VALUES ('radish',7);
 ```
 
-Here we give the values to the columns `name` and `price` for the row. When we assume the column `id` to have a sequential numbering, it automatically gets the value 1, when the row in question is the first row for the table. Thus the table now contains the following:
+Tässä annamme arvot lisättävän rivin sarakkeille `name` ja `price`. Kun sarakkeessa `id` on juokseva numerointi, se saa automaattisesti arvon 1, kun kyseessä on taulun ensimmäinen rivi. Niinpä tauluun ilmestyy seuraava rivi:
+
 
 ```
 id          name        price     
@@ -44,14 +48,16 @@ id          name        price
 1           radish     7         
 ```
 
-If we do not give a value to a column, it gets a default value. In a regular column the default value is `NULL`, which means the data does not exist. For example in the following command we do not give a value to the column price:
+Jos emme anna arvoa jollekin sarakkeelle, se saa oletusarvon. Tavallisessa sarakkeessa oletusarvo on `NULL`, mikä tarkoittaa tiedon puuttumista. Esimerkiksi seuraavassa komennossa emme anna arvoa sarakkeelle `price`:
 
 
 ```sql
 INSERT INTO Products (name) VALUES ('radish');
 ```
 
-Now the table gets a row, where the price is `NULL` (or empty):
+Tällöin tauluun ilmestyy rivi, jossa hinta on `NULL` (eli tyhjä):
+
+
 
 ```
 id          name        price     
@@ -59,9 +65,9 @@ id          name        price
 1           radish     
 ```
 
-## Example table
+## Esimerkkitaulu
 
-In this chapter we assume in our examples, that we have added the following lines into our table `Products`:
+Oletamme tämän osion tulevissa esimerkeissä, että olemme lisänneet tauluun `Products` seuraavat viisi riviä:
 
 ```sql
 INSERT INTO Products (name,price) VALUES ('radish',7);
@@ -71,7 +77,7 @@ INSERT INTO Products (name,price) VALUES ('cucumber',8);
 INSERT INTO Products (name,price) VALUES ('celery',4);
 ```
 
-Now the table looks like this:
+Taulun sisältö on siis seuraavanlainen:
 
 ```
 id          name        price     
@@ -83,15 +89,15 @@ id          name        price
 5           celery      4       
 ```  
 
-## Retrieving information
+## Tiedon hakeminen
 
-The command `SELECT` performs a *query*, or retrieves information from the table. The simplest way to perform a query is to get all the information from a table:
+Komento `SELECT` suorittaa *kyselyn* (*query*) eli hakee tietoa taulusta. Yksinkertaisin tapa tehdä kysely on hakea kaikki tiedot taulusta:
 
 ```sql
 SELECT * FROM Products;
 ```
 
-In this case the query returns as follows:
+Tässä tapauksessa kyselyn tulos on seuraava:
 
 ```
 id          name        price     
@@ -103,13 +109,13 @@ id          name        price
 5           celery      4       
 ```  
 
-The asterisk `*` represents all the columns. We can of course get only certain columns instead. For example we can get only the names of the products:
+Kyselyssä tähti `*` ilmaisee, että haluamme hakea kaikki sarakkeet. Kuitenkin voimme myös hakea vain osan sarakkeista. Esimerkiksi seuraava kysely hakee vain tuotteiden nimet:
 
 ```sql
 SELECT name FROM Products;
 ```
 
-In this case the query returns as follows:
+Kyselyn tulos on seuraava:
 
 ```
 name      
@@ -121,13 +127,13 @@ cucumber
 celery    
 ```
 
-This query gets the names and the prices:
+Tämä kysely puolestaan hakee nimet ja hinnat:
 
 ```sql
 SELECT name, price FROM Products;
 ```
 
-Now the query returns as follows:
+Kyselyn tulos on nyt seuraavanlainen:
 
 ```sql
 name        price     
@@ -139,19 +145,19 @@ cucumber    8
 celery      4         
 ```
 
-As a result of the query the rows form a table, which is called a `result set`. Its columns and rows are dependand on the content of the query. For example the previous query created a result set with two columns and five rows.
+Kyselyn tuloksena olevat rivit muodostavat taulun, jota kutsutaan nimellä *tulostaulu* (`result set`). Sen sarakkeet ja rivit riippuvat kyselyn sisällöstä. Esimerkiksi äskeinen kysely loi tulostaulun, jossa on kaksi saraketta ja viisi riviä.
 
-The result set is sort of a table. Thus while handling databases, there are two types of tables: Fixed tables in the database, and temporary tables created by the queries, whose content are fetched from the fixed tables.
+Tietokannan käsittelyssä esiintyy siis kahdenlaisia tauluja: tietokannassa kiinteästi olevia tauluja, joihin on tallennettu tietokannan sisältö, sekä kyselyjen muodostamia väliaikaisia tulostauluja, joiden tiedot on koostettu kiinteistä tauluista.
 
-## Search clauses
+## Hakuehdot (Search clauses)
 
-Adding `WHERE` to our `SELECT` query we can choose only a part of the rows according to our desired condition. For example the following query retrieves the information for cucumber:
+Liittämällä `SELECT`-kyselyyn `WHERE`-osan voimme valita vain osan riveistä halutun ehdon perusteella. Esimerkiksi seuraava kysely hakee tiedot kurkusta:
 
 ```sql
 SELECT * FROM Products WHERE name='cucumber';
 ```
 
-In this case the query returns as follows:
+Kyselyn tulos on seuraava:
 
 ```
 id          name        price     
@@ -159,13 +165,13 @@ id          name        price
 4           cucumber    8        
 ```
 
-We can also use `AND` and `OR` in the same way as other programming. For example the next query retrieves the products whose price is between 4...6:
+Ehdoissa voi käyttää vertailuja ja sanoja `AND` ja `OR` samaan tapaan kuin ohjelmoinnissa. Esimerkiksi seuraava kysely etsii tuotteet, joiden hinta on välillä 4...6:
 
 ```sql
 SELECT * FROM Products WHERE price>=4 AND price<=6;
 ```
 
-In this case the query returns as follows:
+Kyselyn tulos on seuraava:
 
 ```
 id          name        price     
@@ -175,15 +181,15 @@ id          name        price
 5           celery      4         
 ```
 
-## Ordering
+## Järjestäminen
 
-As a default the order of the returned rows can be anything. We can determine the desired order with `ORDER BY` in our query. For example the next query returns the results in alphabetical order by product name:
+Oletuksena kyselyn tuloksena olevien rivien järjestys voi olla mikä tahansa. Voimme kuitenkin määrittää halutun järjestyksen `ORDER BY` -osan avulla. Esimerkiksi seuraava kysely hakee tuotteet järjestyksessä nimen mukaan:
 
 ```sql
 SELECT * FROM Products ORDER BY name;
 ```
 
-In this case the query returns as follows:
+Kyselyn tulos on seuraava:  
 
 ```
 id          name        price     
@@ -195,13 +201,13 @@ id          name        price
 3           turnip      4         
 ```
 
-The default order is from smallest to largest (**ASC**ENDING). However we can reverse the order, we can add `DESC` (for **DESC**ENDING) after the column `name`:
+Järjestys on oletuksena pienimmästä suurimpaan (**ASC**ENDING). Kuitenkin jos haluamme järjestyksen suurimmasta pienimpään, voimme lisätä sanan `DESC` (**DESC**ENDING) sarakkeen nimen jälkeen:
 
 ```sql
 SELECT * FROM Products ORDER BY name DESC;
 ```
 
-In this case the query returns as follows:
+Tämän seurauksena kyselyn tulos on seuraava:
 
 ```
 id          name        price     
@@ -213,22 +219,22 @@ id          name        price
 2           carrot      5
 ```
 
-If you want to be certain about the ascending order, you can also use `ASC` in your query. Thus, the following queries are identical:
+SQL-kielessä on myös avainsana `ASC`, joka tarkoittaa nousevaa järjestystä. Seuraavat kyselyt toimivat siis samalla tavalla:
 
 ```sql
 SELECT * FROM Products ORDER BY name;
 SELECT * FROM Products ORDER BY name ASC;
 ```
 
-In practice, `ASC` is not very often used, as it is the default.
+Käytännössä sanaa `ASC` käytetään kuitenkin äärimmäisen harvoin.
 
-We can also order the rows with multiple criteria. For example the following query orders the rows primarily from most expensive to cheapest and secondarily by name:
+Voimme myös järjestää rivejä usealla eri perusteella. Esimerkiksi seuraava kysely järjestää rivit ensisijaisesti kalleimmasta halvimpaan hinnan mukaan ja toissijaisesti aakkosjärjestykseen nimen mukaan:
 
 ```sql
 SELECT * FROM Products ORDER BY price DESC, name;
 ```
 
-In this case the query returns as follows:
+Kyselyn tulos on seuraava:
 
 ```
 id          name        price     
@@ -240,17 +246,17 @@ id          name        price
 3           turnip      4    
 ```     
 
-In this case turnip and celery are ordered by their name (ascending), as they have the same price.
+Tässä tapauksessa turnipsi ja selleri järjestetään nimen mukaan, koska ne ovat yhtä kalliita.
 
-## Distinct result rows
+## Erilliset tulosrivit (Distinct result rows)
 
-Sometimes result sets can have similar rows. This happens for example with the next query:
+Joskus tulostaulussa voi olla useita samanlaisia rivejä. Näin käy esimerkiksi seuraavassa kyselyssä:
 
 ```sql
 SELECT price FROM Products;
 ```
 
-As two products have a price of 4, two result rows have the content of 4:
+Koska kahden tuotteen hinta on 4, kahden tulosrivin sisältönä on 4:
 
 ```
 price     
@@ -262,13 +268,13 @@ price
 4  
 ```
 
-If we only want different results, we can add the keyword `DISTINCT`:
+Jos kuitenkin haluamme vain erilaiset tulosrivit, voimme lisätä kyselyyn sanan `DISTINCT`:
 
 ```sql
 SELECT DISTINCT price FROM Products;
 ```
 
-With this the result becomes the following:
+Tämän seurauksena kyselyn tulos muuttuu näin:
 
 ```
 price     
@@ -279,47 +285,48 @@ price
 8         
 ```
 
-## Changing information
+##  Tiedon muuttaminen (Changing information)
 
-The command `UPDATE` changes the content of the rows which match the selected condition. For example the next command changes the `price` for turnip to `6`:
+Komento `UPDATE` muuttaa taulun rivejä, jotka täsmäävät haluttuun ehtoon. Esimerkiksi seuraava komento muuttaa tuotteen `turnip` hinnaksi 6:
 
 ```sql
 UPDATE Products SET price=6 WHERE name='turnip';
 ```
 
-You can change several values by combining the changes with comma. For example the following command sets the `name` of the turnip into `pineapple` and `price` into `9`:
+Useita sarakkeita voi muuttaa yhdistämällä muutokset pilkuilla. Esimerkiksi seuraava komento muuttaa tuotteen `turnip` nimeksi `pineapple` ja hinnaksi 9:
 
 ```sql
 UPDATE Products SET name='pineapple', price=9 WHERE name='turnip';
 ```
 
-The change can also be calculated from a previous value. For example the following command increases the `price` of the turnip `by 1`:
+Muutos voidaan myös laskea aiemman arvon perusteella. Esimerkiksi seuraava komento kasvattaa turnipsin hintaa yhdellä:
 
 ```sql
 UPDATE Products SET price=price+1 WHERE name='turnip';
 ```
 
-If the command does not have a condition, the update affects all rows. For example the following command changes the `price` of all the products into `3`:
+Jos komennossa ei ole ehtoa, se vaikuttaa *kaikkiin* riveihin. Esimerkiksi seuraava komento kasvattaa jokaisen tuotteen hintaa yhdellä:
 
 ```sql
 UPDATE Products SET price=3;
 ```
 
-## Removing information
+## Tiedon poistaminen (Removing information)
 
-The command `DELETE` removes from the table the rows, which match the wanted condition. For example the following command removes `carrot` from products:
+Komento `DELETE` poistaa taulusta rivit, jotka täsmäävät annettuun ehtoon. Esimerkiksi seuraava komento poistaa taulusta tuotteen nimeltä `carrot`:
 
 ```sql
 DELETE FROM Products WHERE name='carrot';
 ```
 
-Alike in changing, if there are no conditionals, the command affects all rows. The following command removes all the rows from the table:
+Kuten muuttamisessa, jos ehtoa ei ole, niin komento vaikuttaa kaikkiin riveihin. Seuraava komento siis poistaa kaikki tuotteet taulusta:
 
 ```sql
 DELETE FROM Products;
 ```
 
-The command `DROP TABLE` removes the table (and all its content). For example the following command removes the table `Products`:
+Komento `DROP TABLE` poistaa tietokannan taulun (ja kaiken sen sisällön). Esimerkiksi seuraava komento poistaa taulun `Products`:
+
 
 ```sql
 DROP TABLE Products;
@@ -330,27 +337,26 @@ DROP TABLE Products;
 
 
 
-# Aggregate queries
+# Yhteenveto ja ryhmittely (Aggregate queries)  
 
-An aggregate query calculates a single value from the rows of a table. For example we can count the amount of rows or the sum of all the values in a column. We can also group the rows by columns and run an aggregate query for each group.
+Yhteenvetokysely laskee jonkin yksittäisen arvon taulun riveistä, kuten taulun rivien määrän tai sarakkeen kaikkien arvojen summan. Tällaisen kyselyn tulostaulussa on vain yksi rivi. VOimme myös ryhmitellä rivejä sarakkeiden mukaan ja tehdä yhteenvetoja jokaisesta ryhmästä.
 
-## Aggregate functions
+## Koostefunktiot (Aggregate functions)
 
-The aggregate queries are based on aggregate functions, which perform operations for the rows or columns. Common aggrecate functions are the following:
+Yhteenvetokyselyn perustana on koostefunktio, joka laskee yhteenvetoarvon taulun riveistä. Tavallisimmat koostefunktiot ovat seuraavat:
 
 ```
 name          function
 ---------     ---------------------------
-COUNT()       counts the amount of rows
-SUM()         counts the sum of rows
-MIN()         retrieves the smallest value
-MAX()         retrieves the largest value
-AVG()         counts the average
+COUNT()       laskee rivien määrän
+SUM()         laskee summan rivien arvoista
+MIN()         noutaa pienimmän arvon
+MAX()         noutaa suurimman arvon
+AVG()         laskee keskiarvon
 ```
-## Examples
+## Esimerkkejä
 
-Let's look at the table `Products` we created earlier:
-
+Tarkastellaan taas taulua `Products`:
 
 ```
 id          name        price     
@@ -362,7 +368,7 @@ id          name        price
 5           celery      4       
 ```        
 
-The next query returns the count of rows:
+Seuraava kysely hakee taulun rivien määrän:
 
 ```sql
 SELECT COUNT(*) FROM Products;
@@ -374,7 +380,7 @@ COUNT(*)
 5
 ```
 
-The following returns the count of those rows, whose price is 4:
+Seuraava kysely hakee niiden rivien määrän, joissa hinta on 4:
 
 ```sql
 SELECT COUNT(*) FROM Products WHERE price=4;
@@ -386,7 +392,7 @@ COUNT(*)
 2
 ```
 
-The following query counts the sum of the prices:
+Seuraava kysely puolestaan laskee summan tuotteiden hinnoista:
 
 ```sql
 SELECT SUM(price) FROM Products;
@@ -398,11 +404,11 @@ SUM(price)
 28
 ```
 
-## Selecting rows
+## Rivien valinta (Selecting rows)
 
-If the aggregate function contains asterisk `*`, the query selects all rows. If the function contains the name of a column, the query will choose the rows whose value *is not* `NULL`.
+Jos koostefunktion sisällä on tähti `*`, kysely laskee kaikki rivit. Jos taas funktion sisällä on sarakkeen nimi, kysely laskee rivit, joissa sarakkeessa on arvo (eli sarake ei ole `NULL`).
 
-Let's look at the following table, whose row 3 has `NULL` for price:
+Tarkastellaan esimerkkinä seuraavaa taulua, jossa rivillä 3 ei ole hintaa:
 
 ```
 id          name        price     
@@ -413,7 +419,7 @@ id          name        price
 4           celery      4         
 ```
 
-The following query returns the count of rows:
+Seuraava kysely hakee rivien yhteismäärän:
 
 ```sql
 SELECT COUNT(*) FROM Products;
@@ -425,7 +431,7 @@ COUNT(*)
 4
 ```
 
-The following query return those rows, whose price is not `NULL`:
+Seuraava kysely taas hakee niiden rivien määrän, joilla on hinta:
 
 ```sql
 SELECT COUNT(price) FROM Products;
@@ -437,7 +443,7 @@ COUNT(price)
 3
 ```
 
-We can also use the keyword `DISTINCT` in aggregate queries. For example the following query informs us, how many different (not NUll) values for price the table has:
+Voimme myös käyttää sanaa `DISTINCT`, jotta saamme laskettua, montako eri arvoa jossakin sarakkeessa on:
 
 ```sql
 SELECT COUNT(DISTINCT price) FROM Products;
@@ -449,11 +455,12 @@ COUNT(DISTINCT price)
 2
 ```
 
-## Grouping
+## Ryhmittely (Grouping)
 
-With grouping we can combine information from rows and aggregate functions. The idea behind this is that rows are divided into groups with columns assigned to `GROUP BY`, after which the aggregate function is calculated for each group separately.
+Ryhmittelyn avulla voimme yhdistää rivikohtaista ja koostefunktion antamaa tietoa. Ideana on, että rivit jaetaan ryhmiin `GROUP BY` -osassa annettujen sarakkeiden mukaan ja tämän jälkeen koostefunktion arvo lasketaan jokaiselle ryhmälle erikseen.
 
-Let's have another example of table `Sales`, where we have information about sales amounts for different years:
+
+Tarkastellaan esimerkkinä seuraavaa taulua `Sales`, jossa on eri vuosien myyntitietoja:
 
 ```
 id          product       year       amount
@@ -469,7 +476,8 @@ id          product       year       amount
 9           cucumber    2019        80
 ```
 
-The next query returns the total sales per year by grouping:
+Seuraava kysely palauttaa kokonaismyynnin jokaiselta vuodelta ryhmiteltynä:
+
 
 ```sql
 SELECT year, SUM(amount) FROM Sales GROUP BY year;
@@ -485,15 +493,15 @@ year       SUM(amount)
 2019        240       
 ```
 
-For example the total sales of 2017 is 120 + 30 + 75 = 225.
+Esimerkiksi vuoden 2017 kokonaismyynti on 120 + 30 + 75 = 225.
 
-On the other had, we can get the total sales by product like this:
+Toisaalta, voimme saada tuotteiden kokonaismyynnin näin:
 
 ```sql
 SELECT product, SUM(amount) FROM Sales GROUP BY product;
 ```
 
-The query returns as follows:
+Kyselyn tulos on seuraava:
 
 ```
 product       SUM(amount)
@@ -503,19 +511,19 @@ turnip      75
 radish      355
 ```
 
-For example the total sales for cucumber is 75 + 100 + 80 = 255.
+Esimerkiksi kurkun kokonaismyynti on 75 + 100 + 80 = 255.
 
-## Naming the return column
+## Tulossarakkeen nimentä
 
-By default the column in the return set gets its name direclty by the query, but we can name them ourselves with `AS` keyword. With this we can clarify, what the aggregate query is about.
+Oletuksena tulostaulun sarake saa nimen suoraan kyselyn perusteella, mutta voimme halutessamme antaa myös oman nimen `AS`-sanan avulla. Tämän ansiosta voimme esimerkiksi selventää, mistä yhteenvetokyselyssä on kyse.
 
-For example in the following query the name of the second column is `total`:
+Esimerkiksi seuraavassa kyselyssä toisen sarakkeen nimeksi tulee `total`:
 
 ```sql
 SELECT product, SUM(amount) AS total FROM Sales GROUP BY product;
 ```
 
-The query returns as follows:
+Kysely palauttaa seuraavaa:
 
 ```
 product     total
@@ -525,15 +533,15 @@ turnip      75
 radish      355
 ```
 
-Actually, the word `AS` is not compulsory, so we could write the query also like this:
+Itseasiassa sana `AS` ei ole pakollinen, eli voisimme kirjoittaa kyselyn myös näin:
 
 ```sql
 SELECT product, SUM(amount) total FROM Sales GROUP BY product;
 ```
 
-## Limitation after grouping
+## Rajaus ryhmittelyn jälkeen (Limitation after grouping)
 
-We can add `HAVING` to our query, which limits the results *after* the grouping. For example the following query returns the products, whose sale is at least 200:
+Voimme lisätä avainsanan `HAVING` kyselyymme, joka rajoittaa tuloksia ryhmittelyn *jälkeen*. Esimerkiksi seuraava kysely palauttaa tuotteet, joiden myynti on vähintään 200:
 
 ```sql
 SELECT product, SUM(amount) AS total
@@ -542,7 +550,7 @@ GROUP BY product
 HAVING total >= 200;
 ```
 
-The query returns as follows:
+Kysely palauttaa seuraavasti:
 
 ```
 product     total
@@ -551,16 +559,16 @@ cucumber    255
 radish      355     
 ```
 
-## Query overview
+## Kyselyn yleiskuva (Query overview)
 
-In our queries we can use many of the clauses we have learnt so far, as long as they are in the following order:
+Kyselyissämme voimme käyttää useita avainsanoja joita olemme tähän mennessä oppineet, kunhan ne ovat seuraavassa järjestyksessä:
 
 
 ```
 SELECT – FROM – WHERE – GROUP BY – HAVING – ORDER BY
 ```
 
-Here is an example of a query with all these parts:
+Seuraavassa on esimerkki kyselystä, joka sisältää yhtä aikaa kaikki nämä osat.
 
 ```sql
 SELECT product, SUM(amount) AS total
@@ -571,7 +579,7 @@ HAVING total >= 100
 ORDER BY product;
 ```
 
-The query returns the sales of the products before the year 2019, only shows products whose sale in these years is over 100, and orders the results by name. The query returns as follows:
+Kysely palauttaa tuotteiden myyntitiedot ennen vuotta 2019, näyttää ainoastaan tuotteet joiden myynti näinä vuosina on yli 100, ja järjestää ne nimen mukaan. Kysely palauttaa seuraavaa:
 
 ```
 product       total
@@ -580,34 +588,34 @@ cucumber    175
 radish      205      
 ```
 
-Notice the difference between `WHERE` and `HAVING`: `WHERE` limits the rows *before* grouping, whereas `HAVING` limits *after* the grouping.
+Huomaa ero `WHERE` ja `HAVING` välillä: `WHERE` rajoittaa rivejä *ennen* ryhmittelyä, kun `HAVING` rajoittaa tuloksia ryhmittelyn *jälkeen*.
 
 
+# SQLite-tietokanta
 
-# SQLite database
+*SQLite* on yksinkertainen avoimesti saatavilla oleva tietokantajärjestelmä, joka soveltuu hyvin SQL-kielen opetteluun. Voit kokeilla helposti SQL-kieleen liittyviä asioita SQLiten avulla, ja käytämme sitä tämän kurssin esimerkeissä.
 
-*SQLite* is a simple and openly availabe database system, which is suitable for learning SQL. You can try the basic functions of SQL with SQLite, and we will use it with some of the examples during this course. 
+## Tietokantajärjestelmät (Database systems)
 
-## Database systems
+SQLite on mainio valinta SQL-kielen harjoitteluun, mutta siinä on tiettyjä rajoituksia, jotka voivat aiheuttaa ongelmia todellisissa sovelluksissa. 
 
-SQLite is a valid choice for learning SQL, but it does have some restrictions, which can cause problems in actual programs.
+Muita suosittuja avoimia tietokantajärjestelmiä ovat *MySQL* ja *PostgreSQL*. Niissä on suuri määrä ominaisuuksia, jotka puuttuvat SQLitestä, mutta toisaalta niiden asentaminen ja käyttäminen on vaikeampaa.
 
-Widely used open database systems are *MySQL* and *PostgreSQL*. They have a large amount of features which are lacking from SQLite, but on the other hand their installation and often usage is more difficult.
+Eri tietokantajärjestelmien välillä siirtyminen on onneksi helppoa, koska kaikissa on samantapainen SQL-kieli. 
 
-Transferring data from different database systems is quite easy, as they all have similar SQL language.
+## SQLite-tulkki (SQLite interpreter)
 
-## SQLite interpreter
+`SQLite-tulkki` on ohjelma, jonka kautta voidaan käyttää SQLite-tietokantaa. Tulkki käynnistyy antamalla komentorivillä komento `sqlite3`. Tämän jälkeen tulkkiin voi kirjoittaa joko suoritettavia SQL-komentoja tai pisteellä alkavia SQLite-tulkin omia komentoja.
 
-*Interpreter* is a program, with which we can use a database. In this case, we are using one for SQLite. The interpreter can be run by giving the command `sqlite3` on command line. Now we can write and run SQL commands or commands beginning with a dot for the interpreter.
-
-If the computer you are using does not have the SQLite interpreter, you can install it from here:
+Jos käyttämälläsi koneella ei ole vielä SQLite-tulkkia, voit asentaa sen tästä:
 [https://www.sqlite.org/download.html](https://www.sqlite.org/download.html)
 
-Choose the according your operating system a packet, which is marked with the topic *command-line tools*. The file you need is the one whose name begins with *sqlite3*.
+Valitse oman käyttöjärjestelmäsi mukainen paketti, jonka vieressä on otsikko *command-line tools* (eli komentorivityökalut). Tarvittava tiedosto on se, jonka nimi alkaa *sqlite3*.
 
-## Example
+## Esimerkki
 
-In the SQLite interpreter the database is by default in memory (being then an *in-memory database*). This means it is empty in the beginning and disappears when the interpreter is closed. This is a good way to test the properties of SQL. A set of commands with the interpreter coud look something like this (with some additional line breaks for readibility):
+SQLite-tulkissa tietokanta on oletuksena muistissa (*in-memory database*). Tämä tarkoittaa, että se on aluksi tyhjä ja katoaa, kun tulkki suljetaan. Tämä on hyvä tapa testailla SQL-kielen ominaisuuksia. Keskustelu tulkin kanssa voi näyttää vaikkapa tältä (tähän on lisätty ylimääräisiä rivinvaihtoja luettavuuden takia):
+
 
 ```
 $ sqlite3
@@ -656,15 +664,19 @@ id          name        price
 sqlite> .quit
 ```
 
-In the example we begin by creating a table `Products` and then check with the command `.tables`, what tables exist in the database. The only table is `Products`, as it was supposed to.
+Esimerkissä luomme aluksi taulun `Products` ja tarkastamme sitten komennolla `.tables`, mitä tauluja tietokannassa on. Ainoa taulu on `Products`, mikä kuuluu asiaan.
 
-After this we add rows to the table and retrieve all the rows from the table. The default of SQLite is to separate the columns with vertical lines. We make the results more readable with the command `.mode column` (each column has a fixed width) and `.headers on` (showing the names of the columns). Finally we run the command `.quit`, which closes the SQLite interpreter.
+Tämän jälkeen lisäämme tauluun rivejä ja haemme sitten kaikki rivit taulusta. SQLite-tulkin oletustapa näyttää tulosrivit pystyviivoin erotettuina ei ole kovin tyylikäs, minkä vuoksi parannamme tulostusta komennoilla `.mode column` (jokaisella sarakkeella on kiinteä leveys) ja `.headers on` (sarakkeiden nimet näytetään).
 
-## Database in a file
+Lopuksi suoritamme komennon `.quit`, joka sulkee SQLite-tulkin.
 
-When running the SQLite interpreter, we can give a filename as a parameter, into which the database is saved. Thus the content of the database is saved after the interpreter is closed.
+## Tietokanta tiedostossa
 
-In the following example the database is saved into the file `test.db`. With this the content of the database is still available, when the interpreter is run again.
+
+Käynnistyksen yhteydessä SQLite-tulkille voi antaa parametrina tiedoston, johon tietokanta tallennetaan. Tällöin tietokannan sisältö säilyy tallessa tulkin sulkemisen jälkeen.
+
+Seuraavassa esimerkissä tietokanta tallennetaan tiedostoon `test.db`. Tämän ansiosta tietokannan sisältö on edelleen tallessa, kun tulkki käynnistetään uudestaan.
+
 
 ```
 $ sqlite3 test.db
@@ -688,9 +700,9 @@ Products
 sqlite> .quit
 ```
 
-## Commands from a file
+## Komennot tiedostosta
 
-For the interpreter we can also redirect a file containing commands, which are run one after another. With this we can automate running the commands. For example we can run the commands from the following file `commands.sql`:
+Voimme myös ohjata SQLite-tulkille tiedoston, jossa olevat komennot suoritetaan peräkkäin. Tämän avulla voimme automatisoida komentojen suorittamista. Esimerkiksi voimme laatia seuraavan tiedoston `commands.sql`:
 
 ```
 CREATE TABLE Products (id INTEGER PRIMARY KEY, name TEXT, price INTEGER);
@@ -704,7 +716,7 @@ INSERT INTO Products (name,price) VALUES ('celery',4);
 SELECT * FROM Products;
 ```
 
-After this we can redirect the commands from the file to the interpreter as follows:
+Tämän jälkeen voimme ohjata komennot tiedostosta tulkille näin:
 
 ```
 $ sqlite3 < commands.sql
