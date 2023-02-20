@@ -4,7 +4,7 @@ nav_order: 4
 hidden: false
 ---
 
-# Basic commands
+# Peruskomennot (Basic commands)
 
 Tässä luvussa tutustumme tavallisimpiin SQL-komentoihin, joiden avulla voimme lisätä, hakea, muuttaa ja poistaa tietokannan sisältöä. Nämä komennot muodostavat perustan tietokannan käyttämiselle. Yleisesti alalla näitä toimintoja kutsutaan englaninninkielisillä nimillä.  **C**reate, **R**ead, **U**pdate and **D**elete, eli lyhenteenä **CRUD**, muodostavat tietokannan perustoiminnot, erityisesti dokumentaatiossa.
 
