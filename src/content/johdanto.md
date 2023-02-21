@@ -7,7 +7,7 @@ hidden: false
 # Mikä on tietokanta?
 
 <Note>
-Materiaalissa on usein mainittuna termien englanninkieliset selitykset, ja kurssin tehtävät ovat englanniksi.
+Materiaalissa on usein mainittuna termien englanninkieliset selitykset, ja kurssin tehtävät ovat saatavilla myös englanniksi.
 
 Tämä siksi, että lähes kaikki dokumentaatio aiheesta on englanniksi, sekä itse SQL-kieli pohjaa englantiin.
 </Note>
