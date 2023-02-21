@@ -4,30 +4,30 @@ nav_order: 8
 hidden: false
 ---
 
-# Data integrity
+# Tiedon eheys (data integrity)
 
-With *data integrity* we mean that the data in the database is current and does not have conflicts. Main responsibility of the data quality lies of course on the user or the application using the database, but also the database designer can affect the integrity by adding conditions to the tables, which monitor the information added to the database.
+*Tiedon eheys (data integrity)* viittaa siihen, että tietokannassa oleva tieto on paikkansa pitävää ja ristiriidatonta. Päävastuu tiedon laadusta on toki käyttäjällä tai sovelluksella, joka muuttaa tietokantaa, mutta myös tietokannan suunnittelija voi vaikuttaa asiaan lisäämällä tauluihin ehtoja, jotka tarkkailevat tietokantaan syötettävää tietoa.
 
-## Column conditions
+## Sarakkeiden ehdot (Column conditions)
 
-We can define conditions for the columns when we create columns, which the database systems monitors when the data is added or changed. With these conditions we can control what sort of data the database contains. Let's look at some of the most typical conditions.
+Voimme määrittää taulun luonnin yhteydessä sarakkeisiin liittyviä ehtoja, joita tietokantajärjestelmä valvoo tiedon lisäämisen ja muuttamisen yhteydessä. Näillä ehdoilla voi ohjata sitä, millaista tietoa tietokantaan ilmestyy. Tyypillisiä ehtoja ovat seuraavat:
 
 ## UNIQUE
 
-Condition `UNIQUE` means, that the column must have a different value on each row. For example in the following table the requirement is, that each product has a different name:
+Ehto `UNIQUE` tarkoittaa, että kyseisessä sarakkeessa tulee olla eri arvo joka rivillä. Esimerkiksi seuraavassa taulussa vaatimuksena on, että joka tuotteella on eri nimi:
 
 ```sql
 CREATE TABLE Products (id INTEGER PRIMARY KEY, name TEXT UNIQUE, price INTEGER);
 ```
 
-## NOT NULL and DEFAULT
-The condition `NOT NULL` means, that the column cannot contain the value `NULL`. For example in the next command the price cannot be empty:
+## NOT NULL ja DEFAULT
+Ehto `NOT NULL` tarkoittaa, että kyseisessä sarakkeessa ei saa olla arvoa `NULL`. Esimerkiksi seuraavassa taulussa tuotteen hinta ei saa olla tyhjä:
 
 ```sql
 CREATE TABLE Products (id INTEGER PRIMARY KEY, name TEXT, price INTEGER NOT NULL);
 ```
 
-The definiton `DEFAULT` is often coupled with this, which gives the column a certain default value, if a value is not given when a row is added. We can give for example a default of 0 like this:
+Tähän liittyy usein myös määre `DEFAULT`, jonka seurauksena sarake saa tietyn oletusarvon, jos sille ei anneta arvoa rivin lisäämisessä. Esimerkiksi voimme määrittää oletusarvon 0 näin:
 
 ```sql
 CREATE TABLE Products (id INTEGER PRIMARY KEY, name TEXT, price INTEGER DEFAULT 0);
@@ -36,15 +36,15 @@ CREATE TABLE Products (id INTEGER PRIMARY KEY, name TEXT, price INTEGER DEFAULT 
 
 ## CHECK
 
-Another common way to create a condition using the keyword `CHECK`, after which you can write any conditional. For example the next command creates a table of products whose price condition is `price >= 0`, which means the price cannot be negative:
+Yleisempi tapa luoda ehto on käyttää avainsanaa `CHECK`, jonka jälkeen voi kirjoittaa minkä tahansa ehtolausekkeen. Esimerkiksi seuraava komento luo taulun tuotteista, jossa rivin ehtona on `price >= 0` eli hinta ei saa olla negatiivinen:
 
 ```sql
 CREATE TABLE Products (id INTEGER PRIMARY KEY, name TEXT, price CHECK (price >= 0));
 ```
 
-## Condition monitoring
+## Ehtojen valvonta (Condition monitoring)
 
-The benefit of condition is that the database system monitors them and refuses to add a row or make a change, which would violate the condition. Here's an example of this in action with SQLite.
+Ehtojen hyötynä on, että tietokantajärjestelmä valvoo niitä ja kieltäytyy tekemästä lisäystä tai muutosta, joka rikkoisi ehdon. Seuraavassa on esimerkki tästä SQLitessä.
 
 
 ```
@@ -62,38 +62,45 @@ sqlite> UPDATE Products SET price=-2 WHERE id=2;
 Error: CHECK constraint failed: Products
 ```
 
-When we try to add a row to the table `Products` with a negative price, this violates the condition `price >= 0` and SQLite does not allow adding the row but gives an `Error: CHECK constraint failed: Products`. Same happens when we try to change the price of existing lines to negative afterwards.
+Kun koetamme lisätä tauluun `Products` rivin, jossa hinta on negatiivinen, tämä rikkoo ehdon `price >= 0` ja SQLite ei salli rivin lisäämistä vaan antaa virheen `Error: CHECK constraint failed: Products`. Samalla tavalla käy, jos koetamme muuttaa olemassa olevan rivin sarakkeen hinnan negatiiviseksi jälkeenpäin.
 
-## Reference conditions
 
-We can also add conditions to the tables which make sure, that the references in the tables refer to actual rows. This is done by creating `foreing key` which describes, where does the row refer to.
+## Viittausten ehdot (Reference conditions)
 
-Let's look at an example:
+Voimme liittää myös tauluihin ehtoja, jotka pitävät huolen siitä, että tauluissa olevat viittaukset viittaavat todellisiin riveihin. Tämä tapahtuu luomalla *viiteavain (foreign key)*, joka ilmaisee, mihin taulussa oleva rivi viittaa.
+
+Tarkastellaan esimerkkinä seuraavia tauluja:
 
 ```sql
 CREATE TABLE Teachers (id INTEGER PRIMARY KEY, name TEXT);
 CREATE TABLE Courses (id INTEGER PRIMARY KEY, name TEXT, teacher_id INTEGER);
 ```
 
-Here the purpose is that the table `Courses` column `teacher_id` references to the column `id` from table `Teachers`, but the database user can give any value for the column (for example number 123), when the database content is broken. We can make this better while creating the table `Courses` by telling that the column `teacher_id` is a `foreign key` to the table `Teachers`:
+Tässä tarkoituksena on, että taulun `Courses` sarake `teacher_id` viittaa taulun `Teachers` sarakkeeseen `id`, mutta tietokannan käyttäjä voi antaa sarakkeen `teacher_id` arvoksi mitä tahansa (esim. luvun 123), jolloin tietokannan sisältö muuttuu epämääräiseksi.
+
+Voimme parantaa tilannetta kertomalla taulun `Courses` luonnissa, että sarake `teacher_id` on viiteavain tauluun `Teachers`:
+
 
 ```sql
 CREATE TABLE Courses (id INTEGER PRIMARY KEY, name TEXT, teacher_id INTEGER REFERENCES Teachers);
 ```
 
-Now we can trust that the values in the `Courses` column `teacher_id` refer to actual rows in table `Teachers`.
+Tämän jälkeen voimme luottaa siihen, että taulussa `Courses` sarakkeen `teacher_id` arvot viittaavat todellisiin riveihin taulussa `Teachers`.
 
-## Reference keys in SQLite
 
-Can we actually trust, that the reference keys work in the desired ways? For historical reasons, SQLite does not monitor the reference key konditions by default, but first we have to run the following command:
+## Viiteavaimet SQLitessä
+
+Voimmeko oikeasti luottaa, että viiteavaimet toimivat halutulla tavalla?
+
+Can we actually trust, that the reference keys work in the desired ways? Historiallisista syistä SQLite ei oletuksena valvo viiteavainten ehtoja, vaan meidän tulee ensin suorittaa seuraava komento:
 
 ```
 sqlite> PRAGMA foreign_keys = ON;
 ```
 
-This is specific to SQLite, and on other database systems the reference key monitoring *should* be always monitored.
+Tämä on SQLiten erikoisuus, ja muissa tietokannoissa viiteavaimia *pitäisi* aina valvoa.
 
-Here's an example of using a reference key:
+Tässä on esimerkki viiteavaimen käyttämisestä:
 
 ```
 sqlite> PRAGMA foreign_keys = ON;
@@ -110,68 +117,71 @@ sqlite> INSERT INTO Courses (name, teacher_id) VALUES ('Algebra',123);
 Error: FOREIGN KEY constraint failed   
 ```
 
-In the table `Teachers` we have two teachers whose `id` are 1 and 2. When we try to add a row to `Courses` where the `teacher_id` is 123, SQLite does not allow it and we get an error `Error: FOREIGN KEY constraint failed`.
+Taulussa `Teachers` on kaksi opettajaa, joiden `id`-numerot ovat 1 ja 2. Niinpä kun koetamme lisätä tauluun `Courses` rivin, jossa `teacher_id` on 123, SQLite ei salli tätä vaan saamme virheilmoituksen `Error: FOREIGN KEY constraint failed`.
 
-## References and removals
+## Viittaukset ja poistot
 
-Reference conditions have more complex situations than regular columns, as the references are between two tables. Especially important is to notice, what happens when we try to remove a row, which is being referenced to from another table?
+Viittausten ehtoihin liittyy tavallisia sarakkeiden ehtoja mutkikkaampia tilanteita, koska viittaukset ovat kahden taulun välisiä. Erityisesti mitä tapahtuu, jos taulusta yritetään poistaa rivi, johon viitataan toisen taulun rivillä?
 
-Usually the default is that we cannot remove a row from a database, if the row is being references from elsewhere. For example, if we try to remove the row 2 from the table `Teachers` above, this does not work, as it is being referenced from the table `Courses`:
+Yleensä oletuksena tietokannoissa riviä ei voi poistaa, jos siihen on viittaus muualta. Esimerkiksi jos koetamme äskeisen esimerkin päätteeksi poistaa taulusta `Teachers` rivin 2, tämä ei onnistu, koska siihen viitataan taulussa `Courses`:
+
 
 ```sql
 sqlite> DELETE FROM Teachers WHERE id=2;
 Error: FOREIGN KEY constraint failed
 ```
 
-If we want, we can define in table creation more cleary what happens in a situation like this. For example one option is `ON DELETE CASCADE`, which means that when a row is removed, so are the rows referencing to it. We can achieve it as follows:
+Halutessamme voimme kuitenkin määrittää taulun luonnissa tarkemmin, mitä tapahtuu tässä tilanteessa. Esimerkiksi yksi vaihtoehto on `ON DELETE CASCADE`, mikä tarkoittaa, että rivin poistuessa myös siihen viittaavat rivit poistetaan. Saamme tämän aikaan näin:
 
 ```sql
 CREATE TABLE Courses (id INTEGER PRIMARY KEY, name TEXT,
       teacher_id INTEGER REFERENCES Teachers ON DELETE CASCADE);
 ```   
 
-Now if we remove a teacher from the database, the courses they teach are also automatically removed. This though is often not the desired option, as this means we might lose too much information from the database.
+Nyt jos tietokannasta poistetaan opettaja, niin samalla poistetaan automaattisesti kaikki kurssit, joita hän opettaa. Tämä voi kuitenkin olla kyseenalainen vaihtoehto, koska tämän seurauksena tietokannan tauluista voi kadota yllättäen tietoa.
 
-## Consequences of removal
+## Poiston seuraukset
 
-Possible options in `ON DELETE` are:
+Mahdollisia vaihtoehtoja `ON DELETE` -osassa ovat:
 
-* `NO ACTION`: "don't do anything" (default)
-* `RESTRICT`: prevent removal
-* `CASCADE`: also remove the referencing rows
-* `SET NULL`: change the referencing value to `NULL`
-* `SET DEFAULT`: change the reference to default value
+* `NO ACTION`: “älä tee mitään” (oletus)
+* `RESTRICT`: estä poistaminen
+* `CASCADE`: poista myös viittaavat rivit
+* `SET NULL`: muuta viittaukset arvoksi `NULL`
+* `SET DEFAULT`: muuta viittaukset oletusarvoksi
 
-A puzzling notice is, that `NO ACTION` prevents the removal, even though the name suggests otherwise. In practice, `NO ACTION` and `RESTRICT` work almost similarly, but on some database systems and special cases there might be differences.
+Hämmentävä seikka on, että myös oletusvaihtoehto `NO ACTION` estää rivin poistamisen, vaikka nimestä voisi päätellä muuta. Vaihtoehdot `NO ACTION` ja `RESTRICT` toimivat käytännössä lähes samalla tavalla, mutta tietokannasta riippuen niiden toiminnassa voi olla eroja joissain erikoistilanteissa.
 
-# Introduction to transactions
+# Johdatus transaktioihin
 
-Transaction is a group of consecutive SQL commands, which the database promises to execute as a whole. The database user can trust, that either
-1. All the commands are executed and the changes are permanent on the database
-2. Transaction is aborted and the commands do not cause any changes to the database
+*Transaktio (transaction)* on joukko peräkkäisiä SQL-komentoja, jotka tietokantajärjestelmä lupaa suorittaa yhtenä kokonaisuutena. Tietokannan käyttäjä voi luottaa siihen, että joko 
+1. kaikki komennot suoritetaan ja muutokset jäävät pysyvästi tietokantaan tai
+2. transaktio keskeytyy eivätkä komennot aiheuta mitään muutoksia tietokantaan.
+
 
 ## ACID
 
-With transactions we come across the acronym *ACID* quite often, which is derived from the following:
+Transaktioiden yhteydessä esiintyy usein ihanteena kirjainyhdistelmä *ACID*, joka tulee seuraavista sanoista:
 
-* Atomicity: The commands in the transaction are run as a single whole.
-* Consistency: The transaction keeps the database content intact.
-* Isolation: Transactions are run separated from each other.
-* Durability: When a transaction is completed the change is permanent.
+* Atomicity: Transaktiossa olevat komennot suoritetaan yhtenä kokonaisuutena.
+* Consistency: Transaktio säilyttää tietokannan sisällön eheänä.
+* Isolation: Transaktiot suoritetaan eristyksessä toisistaan.
+* Durability: Loppuun viedyn transaktion tekemät muutokset jäävät pysyviksi.
 
-## Transaction phases
+## Transaktion vaiheet
 
-A transaction is actually quite a mundane part of database usage, as per default each SQL command is a transaction as such. Let's look for example the next command, which increases the price of each product by one:
+
+Itse asiassa transaktio on hyvin arkipäiväinen asia tietokannan käyttämisessä, sillä oletuksena jokainen suoritettava SQL-komento on oma transaktionsa. Tarkastellaan esimerkiksi seuraavaa komentoa, joka kasvattaa jokaisen tuotteen hintaa yhdellä:
 
 ```sql
 UPDATE Products SET price=price+1;
 ```
 
-As the command is actually a transaction, we can trust that indeed the price of each product is increased by one, or then the price of any product is not changed. The latter happens for example if the connection to database is lost during the update. Even in that situation only part of the prices would be updated.
+Koska komento suoritetaan transaktiona, voimme luottaa siihen, että joko jokaisen tuotteen hinta todella kasvaa yhdellä tai sitten minkään tuotteen hinta ei muutu. Jälkimmäinen voi tapahtua esimerkiksi silloin, kun sähköt katkeavat kesken päivityksen. Siinäkään tapauksessa ei siis voi käydä niin, että vain osa hinnoista muuttuu.
 
-Usually still the word transaction is used to refer to a whole of several SQL commands. Then we begin with the command `BEGIN TRANSACTION`, which starts the transaction. We continue by running all the necessary commands as usual, and finish with the command `COMMIT`, which closes the transaction.
+Usein kuitenkin sana transaktio viittaa erityisesti siihen, että kokonaisuuteen kuuluu useampi SQL-komento. Tällöin annamme ensin komennon `BEGIN`, joka aloittaa transaktion, sitten kaikki transaktioon kuuluvat komennot tavalliseen tapaan ja lopuksi komennon `COMMIT`, joka päättää transaktion.
 
-A classic example of a transaction is a situation, where we transfer money from one bank account to another. For example the following transaction moves 100 euros from Maija's account to Uolevi's:
+Klassinen esimerkki transaktiosta on tilanne, jossa pankissa siirretään rahaa tililtä toiselle. Esimerkiksi seuraava transaktio siirtää 100 euroa Maijan tililtä Uolevin tilille:
 
 ```sql
 BEGIN TRANSACTION;
@@ -180,13 +190,16 @@ UPDATE Accounts SET balance=balance+100 WHERE owner='Uolevi';
 COMMIT;
 ```
 
-The concept behind transactions is that no permanent change is done before the command `COMMIT`. Thus in the example above it is not possible for Maija to lose 100 euros and Uolevi getting nothing (remember the example from the beginning of the course?). Either the balance of both accounts are changed and the money is transferred successfully, or both balances remain unchanged.
+Transaktion ideana on, että mitään pysyvää muutosta ei tapahdu ennen komentoa `COMMIT`. Niinpä yllä olevassa esimerkissä ei ole mahdollista, että Maija menettäisi 100 euroa mutta Uolevi ei saisi mitään. Joko kummankin tilin saldo muuttuu ja rahat siirtyvät onnistuneesti tai molemmat saldot säilyvät entisellään.
 
-If a transaction is interrupted for any reason before the `COMMIT`, all the changes in the transaction are cancelled. One reason for a transaction interruption could be a malfunction with the computer, but we can also ourselves terminate the transaction with the command `ROLLBACK`.
+Jos transaktio keskeytyy jostain syystä ennen komentoa `COMMIT`, kaikki transaktiossa tehdyt muutokset peruuntuvat. Yksi syy transaktion keskeytymiseen on jokin häiriö tietokoneen toiminnassa (kuten sähköjen katkeaminen), mutta voimme myös itse halutessamme keskeyttää transaktion antamalla komennon `ROLLBACK`.
 
-## Testing a transaction
 
-A good way to gain knowledge of transactions is to try in practice, how they work. Here's an example of a conversation with SQLite (with added linebreaks):
+## Transaktioiden kokeilu
+
+
+Hyvä tapa saada ymmärrystä transaktioista on kokeilla käytännössä, miten ne toimivat. Tässä on esimerkkinä yksi keskustelu SQLiten kanssa:
+
 
 ```
 sqlite> CREATE TABLE Accounts (id INTEGER PRIMARY KEY, owner TEXT, balance INTEGER);
@@ -218,44 +231,46 @@ sqlite> SELECT * FROM Accounts;
 2|Maija|500
 ```
 
-In the beginning, Uolevi has 350 euros on their account and Maija has 600 on theirs. In the first transaction we first remove 100 euros from Maija, but then we have a second thought and terminate the transaction. Thus the change made in the transaction is cancelled and the balances remain the same as in the beginning. We do complete the second transaction, for which Uolevi now has 450 euros and Maija has 500 euros on the account.
+Alkutilanteessa Uolevin tilillä on 350 euroa ja Maijan tilillä on 600 euroa. Ensimmäisessä transaktiossa poistamme ensin Maijan tililtä 100 euroa, mutta sen jälkeen tulemme toisiin ajatuksiin ja keskeytämme transaktion. Niinpä transaktiossa tehty muutos peruuntuu ja tilien saldot ovat samat kuin alkutilanteessa. Toisessa transaktiossa viemme kuitenkin transaktion loppuun, minkä seurauksena Uolevin tilillä on 450 euroa ja Maijan tilillä on 500 euroa.
 
-Notice, that we can see the changes *inside the transaction*, even though they have not been permanently saved to the database. For example the `SELECT` query inside the first transaction shows Maija's balance as 500 euros, since the previous `UPDATE` changed the balance.
-
-
-## Internal implementation
-
-Implementing transactions is a fascinating technical challenge in databases. In a way the transaction has to make changes to the database as the commands may be reliant on previous commands, but on the other hand nothing can be permanently changed before the transaction is completed.
-
-One central idea behind databases is to save changes in two ways. First the description of the change is written into a *log file* called `write-ahead log`, which can be thought of as a list of commands that have been run. Only after this the changes are done to the actual data structures of the database. Now if something surprising happens in the second phase, the changes are already saved in the log and can be run again later.
-
-When making a transaction the database system also has to keep track of which ongoing changes are done by which transaction. In practice we can only make changes which are visible to certain transactions. If and only if the transaction is completed, the changes are made to the table row permanently.
+Huomaa, että transaktion sisällä muutokset kyllä näkyvät, vaikka niitä ei olisi tehty vielä pysyvästi tietokantaan. Esimerkiksi ensimmäisen transaktion `SELECT`-kysely antaa Maijan tilin saldoksi 500 euroa, koska edellinen `UPDATE`-komento muutti saldoa.
 
 
-# Parallel transactions
+## Transaktioiden sisäinen toiminta
 
-Additional mix to transaction handling is created when a database can have several users, whom all have transactions going on at the same time. How much should we isolate the transactions from one another?
+Transaktioiden toteuttaminen on kiehtova tekninen haaste tietokannoissa. Tavallaan transaktion tulee tehdä muutoksia tietokantaan, koska komennot voivat riippua edellisistä komennoista, mutta toisaalta mitään ei saa muuttaa pysyvästi ennen transaktion viemistä loppuun.
 
-Unfortunately we do not have a single answer for this, but the answer is dependant on the use case as well as the database qualities. In a way the best solution would be to completely isolate the transaction, but in practice this can affect the database usage negatively.
+Yksi keskeinen ajatus tietokantojen taustalla on tallentaa muutoksia kahdella tavalla. Ensin kuvaus muutoksesta kirjataan *lokitiedostoon* (`write-ahead log`), jota voi ajatella luettelona suoritetuista komennoista. Vasta tämän jälkeen muutokset tehdään tietokannan varsinaisiin tietorakenteisiin. Nyt jos jälkimmäisessä vaiheessa sattuu jotain yllättävää, muutokset ovat jo tallessa lokitiedostossa ja ne voidaan suorittaa myöhemmin uudestaan.
 
-## Transaction isolation levels
-The SQL standard defines the transaction isolation levels as follows:
+Transaktioiden yhteydessä tietokantajärjestelmän täytyy myös pitää kirjaa siitä, mitkä muutokset ovat minkäkin meneillään olevan transaktion tekemiä. Käytännössä tauluihin voidaan tallentaa rivimuutoksia, jotka näkyvät vain tietyille transaktioille. Sitten jos transaktio pääsee loppuun asti, nämä muutokset liitetään taulun pysyväksi sisällöksi.
 
-* Level 1 (read uncommitted)
-It is permitted that a transaction can see the changes done by another transaction, even though the other transaction is not yet committed (dirty read).
 
-* Level 2 (read committed)
-Unlike on level 1, the transaction can only see the changes made by another transaction, if the other transaction has been committed.
+# Rinnakkaiset transaktiot (Parallel transactions)
 
-* Level 3 (repeatable read)
-Requirements from level 2, and in addition if during a transaction a row is read multiple times, the content stays unchanged on each reading.
+Lisämaustetta transaktioiden käsittelyyn tuo se, että tietokannalla voi olla useita käyttäjiä, joilla on meneillään samanaikaisia transaktioita. Missä määrin eri käyttäjien transaktiot tulisi eristää toisistaan?
 
-* Level 4 (serializable)
-Transactions are totally isolated and the commands act as if the transactions were run one at a time in some order.
+Tämä on kysymys, johon ei ole yhtä oikeaa vastausta, vaan vastaus riippuu käyttötilanteesta ja myös tietokannan ominaisuuksista. Tavallaan paras ratkaisu olisi eristää transaktiot täydellisesti toisistaan, mutta toisaalta tämä voi haitata tietokannan käyttämistä.
 
-## Example
 
-Let's examine a situation where the price for product 1 is 8 in the beginning and two users are running commands at the same time inside transactions (user 1 on the left, user 2 on the right):
+
+## Transaktoiden eristystasot (Transaction isolation levels)
+SQL-standardi määrittelee transaktioiden eristystasot seuraavasti:
+
+* Taso 1 (read uncommitted)
+On sallittua, että transaktio pystyy näkemään toisen transaktion tekemän muutoksen, vaikka toista transaktiota ei ole viety loppuun (dirty read).
+
+* Taso 2 (read committed)
+Toisin kuin tasolla 1, transaktio saa nähdä toisen transaktion tekemän muutoksen vain, jos toinen transaktio on viety loppuun.
+
+* Taso 3 (repeatable read)
+Tason 2 vaatimus ja lisäksi jos transaktion aikana luetaan saman rivin sisältö useita kertoja, joka kerralla saadaan sama sisältö.
+
+* Taso 4 (serializable)
+Transaktiot ovat täysin eristettyjä ja komennot käyttäytyvät samoin kuin jos transaktiot olisi suoritettu peräkkäin yksi kerrallaan jossain järjestyksessä.
+
+## Esimerkki
+
+Tarkastellaan tilannetta, jossa tuotteen 1 hinta on aluksi 8 ja kaksi käyttäjää suorittaa samaan aikaan komentoja transaktioiden sisällä (käyttäjän 1 komennot ovat vasemmalla ja käyttäjän 2 komennot ovat oikealla):
 
 ```sql
 BEGIN TRANSACTION;
@@ -267,25 +282,26 @@ SELECT price FROM Products WHERE id=1;
 SELECT price FROM Products WHERE id=1;
 COMMIT;
 ```
-On level 1, the user 1 can get results 5 and 7 on their query, as the changes of user 2 can be shown immediately, even though the transaction of user 2 has not yet been committed.
+Tasolla 1 käyttäjä 1 voi saada kyselyistä tulokset 5 ja 7, koska käyttäjän 2 tekemät muutokset voivat tulla näkyviin heti, vaikka käyttäjän 2 transaktioita ei ole viety loppuun.
 
-On level 2, user 1 can get results 8 and 7, as during the first query the transaction for user 2 has not been yet committed, but has been during the second query.
+Tasolla 2 käyttäjä 1 voi saada kyselyistä tulokset 8 ja 7, koska ensimmäisen kyselyn kohdalla toista transaktiota ei ole viety loppuun, kun taas toisen kyselyn kohdalla se on viety loppuun.
 
-On levels 3 and 4, user 1 gets the query results as 8 and 8, as this is the situation before the transaction began, and a transaction done in between cannot change the content of the read row.
+Tasoilla 3 ja 4 käyttäjä 1 saa kyselyistä tulokset 8 ja 8, koska tämä on tilanne ennen transaktion alkua eikä välissä loppuun viety transaktio saa muuttaa luettua rivin sisältöä.
 
-## Transactions in practice
+## Transaktiot käytännössä
 
-The implementation and the available isolation levels depend on the database system used. For example in SQLite the only level is 4, whereas PostgreSQL has levels 2 to 4 available, defaulting to 2.
 
-## Why use different levels?
+Transaktioiden toteutustavat ja saatavilla olevat eristystasot riippuvat käytetystä tietokantajärjestelmästä. Esimerkiksi SQLitessä ainoa mahdollinen taso on 4, kun taas PostgreSQL toteuttaa tasot 2–4 ja oletuksena käytössä on taso 2.
 
-The isolation level 4 is clearly the best, as the changes from transactions are not shown to each other. Why do the other levels exist, and why does PostgreSQL default to level 2?
+## Miksi käyttää eri tasoja?
 
-The price of good isolation is slowing down the database, or even blocking transactions, as committing transactions might cause a conflict. On the other hand in many situations a lower level of isolation is more than enough, as long as the database user is aware of it.
+Eristystaso 4 on tavallaan selkeästi paras, koska silloin transaktioiden muutokset eivät voi näkyä mitenkään toisilleen. Miksi edes muut tasot ovat olemassa ja miksi esimerkiksi PostgreSQL:n oletustaso on 2?
 
-Best source for knowledge on transactions is once again reading the database system documentation, as well as testing it yourself. For example we could ourselves run *two* SQLite interpreters, open the same database and run transaction commands on both and observe the results.
+Hyvän eristämisen hintana on, että se voi hidastaa tai estää transaktioiden suorittamista, koska transaktion vieminen loppuun voisi aiheuttaa ristiriitaisen tilanteen. Toisaalta monissa käytännön tilanteissa riittää mainiosti heikompikin eristys, kunhan tietokannan käyttäjä on siitä tietoinen.
 
-The following conversation was run with the above setting:
+Hyvää tietoa rinnakkaisten transaktioiden toiminnasta saa perehtymällä käytetyn tietokannan dokumentaatioon sekä testailemalla asioita itse käytännössä. Esimerkiksi voimme käynnistää itse *kaksi* SQLite-tulkkia, avata niillä saman tietokannan ja sen jälkeen kirjoittaa transaktioita sisältäviä komentoja ja tehdä havaintoja.
+
+Seuraava keskustelu näyttää edellisen esimerkin tuloksen kahdessa rinnakkain käynnissä olevassa SQLite-tulkissa:
 
 ```
 sqlite> BEGIN TRANSACTION;
@@ -301,9 +317,9 @@ sqlite> SELECT price FROM Products WHERE id=1;
 sqlite> COMMIT;
 ```
 
-Here we can see the first transaction indeed gets 8 as a result for both queries. We cannot infact even commit the second transaction but get an error message `Error: database is locked` as the database is locked due to the other transaction being uncommitted. The isolation indeed works well, but we would have to try again to commit the second transaction.
+Tästä näkee, että ensimmäinen transaktio tosiaan saa kummastakin kyselystä tuloksen 8. Toista transaktiota ei sen sijaan saada vietyä loppuun, vaan tulee virheviesti `Error: database is locked`, koska tietokanta on lukittuna samanaikaisen transaktion takia. Eristys toimii siis hyvin, mutta toista transaktiota pitäisi yrittää viedä loppuun uudestaan.
 
-For comparison, here's the same conversation with PostgreSQL and level 2:
+Vertailun vuoksi tässä on vastaava keskustelu PostgreSQL-tulkeissa (tasolla 2):
 
 ```
 user=> BEGIN TRANSACTION;
@@ -318,4 +334,4 @@ user=> SELECT price FROM Products WHERE id=1;
 user=> COMMIT;
 ``` 
 
-Now the value changed to 7 by the second transaction is returned to the first transaction, but on the other hand both transactions are committed without a problem.
+Nyt toisen transaktion muuttama arvo 7 ilmestyy ensimmäiseen transaktioon, mutta toisaalta molemmat transaktiot saadaan vietyä loppuun ongelmitta.
