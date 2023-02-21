@@ -22,7 +22,7 @@ Voimme nimetä taulun ja sarakkeet haluamallamme tavalla. Tällä kurssilla käy
 Jokaisesta sarakkeesta ilmoitetaan nimen lisäksi tyyppi. Tässä taulussa sarakkeet `id` ja `price` ovat kokonaislukuja (INTEGER) ja sarake `name` on merkkijono (TEXT). Sarake `id` on lisäksi taulun pääavain (PRIMARY KEY), mikä tarkoittaa, että se yksilöi jokaisen taulun rivin ja voimme viitata sen avulla kätevästi mihin tahansa riviin.
 
 
-## Pääavain
+## Pääavain (Primary key)
 
 Tietokannan taulun pääavain on jokin sarake (tai sarakkeiden yhdistelmä), joka yksilöi taulun jokaisen rivin eli millään kahdella rivillä ei ole samaa pääavainta. Käytännössä hyvin tavallinen valinta pääavaimeksi on kokonaislukumuotoinen id-numero.
 
