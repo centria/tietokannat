@@ -4,30 +4,31 @@ nav_order: 7
 hidden: false
 ---
 
-# Design principles
+# Suunnittelun periaatteet
 
-When designing a database we have to decide, which tables the database has and which columns each table has. To do this there are multiple possibilities, but by knowing a few principles and with common sense you can get surprisingly far.
+Tietokannan suunnittelussa meidän tulee päättää tietokannan rakenne: mitä tauluja tietokannassa on sekä mitä sarakkeita kussakin taulussa on. Tähän on sinänsä suuri määrä mahdollisuuksia, mutta tuntemalla muutaman periaatteen pääsee pitkälle.
 
-A good goal for designing is that the resulting database is comfortable to use with SQL. The database structure should be such, that we can read and update data easily with SQL commands.
+Hyvä tavoite suunnittelussa on, että tuloksena olevaa tietokantaa on mukavaa käyttää SQL-kielen avulla. Tietokannan rakenteen tulisi olla sellainen, että pystymme hakemaan ja muuttamaan tietoa näppärästi SQL-komennoilla.
 
-Here are four principles for desiging a database:
+Tässä ovat neljä tietokannan sunnittelun periaatetta:
 
-## Principle 1
-The tables and their columns in the database are fixed, and the database user only makes changes to the rows. All the rows containing similar data are in the same table.
+## Periaate 1
+Taulut ja niiden sarakkeet ovat kiinteitä, ja tietokannan käyttäjä tekee muutoksia vain riveihin. Kaikki samanlaista tietoa sisältävät rivit ovat samassa taulussa.
 
-## Principle 2
-Each column contains a singular data, such as an integer or a string, but not a list of information. A list is saved into its own table so that each element is a row of its own.
+## Periaate 2
+Jokainen sarake sisältää yksittäistä dataa, kuten kokonaisluvun tai tekstiä, mutta ei listaa asioista. Lista talletetaan omaksi taululukseen siten, että jokainen elementti on oma rivinsä.
 
-## Principle 3
-Each information is exactly once in the database. Elsewhere the information is a referenced by the primary key.
+## Periaate 3
+Jokainen tietue on tietokannassa tasan kerran. Muualla tähän tietoon viitataan pääavaimella.
 
-## Principle 4
-The database does not contain information, which can be calculated or deducted from other information content in the database.
+## Periaate 4
+Tietokanta ei sisällä tietoa, joka voidaan laskea tai päätellä muusta tietokannan sisällöstä.
 
 
 ## Example
 
-Let's look at a situation, where a web site has users and each user has a list of friends. Here we can see quite poorly designed table `Users`, which contains information about users and their friends:
+Tarkastellaan tilannetta, jossa verkkosivulla on käyttäjiä ja jokaisella käyttäjällä on lista ystäviä. Tässä näemme melko huonosti suunnitellun taulun `Users`, joka sisältää tietoa käyttäjistä ja heidän ystävistään:
+
 
 ```
 id          username    friends       total
@@ -38,15 +39,15 @@ id          username    friends       total
 4           aapeli      uolevi,maija  2
 ```
 
-In this table the idea is, that the column `friends` contains a list of friends as a string, where the `usernames` for friends are separated with a comma. Also, in the column `total` we are given the amount of friends in total a user has.
+Ajatuksena tässä taulussa on, että sarake `friends` sisältää listan ystävistä tekstinä, jossa ystävien käyttäjätunnukset (`username`) ovat eroteltu pilkuin. Lisäksi, sarakkeessa `total` on annettu ystävien kokonaismäärä.
 
-With this structure we are breaking the principles 2-4, but now we have a chance to evolve the database and think, what the principles are based on.
+Tällä rakenteella rikomme periaatteita 2-4, mutta nyt meillä on mahdollisuus parantaa tietokantaa ja pohtia, mihin periaatteet pohjautuvat.
 
-## Improvement 1
+## Parannus 1
 
-The database breaks the principle 2, since the column `friends` has a list of friends. The problem with this kind of column is, that it is hard to handle with SQL commands. For example how can we find out, who all have added Maija as their friend?
+Tietokanta rikkoo periaatetta 2, sillä sarake `friends` sisältää listan ystävistä. Ongelmana tässä sarakkeessa on, että sitä on hankala käsitellä SQL-komennoilla. Esimerkiksi miten saamme selville, ketkä kaikki ovat lisänneet Maijan ystäväkseen?
 
-The solution is to remove the column `friends` and rather create a new table `Friends`, where each row is a friendship in the form of "user x has user y on their friend list":
+Ratkaisuna on poistaa sarake `friends` ja luodaan uusi taulu `Friends`, jossa jokainen rivi on ystävyyssuhde muorossa "`käyttäjällä X on käyttäjä Y kaverilistallaan`":
 
 ```
 user        friend
@@ -58,7 +59,7 @@ aapeli      uolevi
 aapeli      maija
 ```
 
-Now the table `Users` looks like this:
+Nyt taulu `Users` näyttää tältä:
 
 ```
 id          username      total
@@ -69,17 +70,17 @@ id          username      total
 4           aapeli      2
 ```
 
-Now we can easily solve, on whose lists Maija is:
+Nyt voimme helposti ratkaista, keiden listoilla Maija on:
 
 ```sql
 SELECT user FROM Friends WHERE friend='maija';
 ```
 
-## Improvement 2
+## Parannus 2
 
-The new table `Friends` is nice, but it breaks the principle 3, as the usernames are now in multiple places. The problem here is, that if the username changes, we have to search all the places where the username is used.
+Uusi taulu `Friends` on hyvä, mutta se rikkoo periaatetta 3, sillä käyttäjänimet ovat nyt useassa paikassa. Ongelmana on, että käyttäjänimen muuttuessa, joudume etsimään kaikki paikat jossa käyttäjänimeä on käytetty.
 
-The resolution is to change the table `Friends` so that it uses references. Now the table looks like this:
+Ratkaisuna on muuttaa taulu `Friends` käyttämään viitteitä. Nyt taulu näyttää tältä:
 
 ```
 user_id      friend_id
@@ -91,7 +92,7 @@ user_id      friend_id
 4            2
 ```
 
-Notice, this makes it more difficult to find on whose lists Maija is, as we have to get the usernames from table Users:
+Huomaa, tämän myötä on hankalampaa löytää keiden listoilla Maija on, koska joudumme hakemaan käyttäjänimet taulusta `Users`:
 
 ```sql
 SELECT A.username
@@ -99,18 +100,18 @@ FROM Users A, Users B, Friends K
 WHERE A.id = K.user_id AND B.id = K.friend_id AND B.username = 'maija';
 ``` 
 
-Despite this the change is reasonable, as now the usernames are only used once, in the table Users.
+Tästä huolimatta muutos on järkevä, sillä käyttäjänimiä käytetään nyt vain kerran, taulussa `Users`.
 
 
-## Improvement 3
 
-The database is still breaking the principle 4, as the column `total` can be calculated from the table `Friends`. It is quite a handy column, as we can get for example Uolevi's friends like this:
+## Parannus 3
+
+Tietokanta rikkoo edelleen periaatetta 4, sillä sarake `total` pystytään laskemaan taulusta `Friends`. Se on oikein näppärä sarake, sillä tällä hetkellä voimme esimerkiksi hakea Uolevin ystävät seuraavasti:
 
 ```sql
 SELECT total FROM Users WHERE username='uolevi';
 ```
-
-The problem is though, that every time we change friends, we would have to update the column total. A better solution is to remove the column from the table:
+Ongelmana tosin on, että joka kerta ystävien muuttuessa, meidän pitäisi päivittää myös saraketta `total`. Parempi ratkaisu on poistaa koko sarake taulusta:le:
 
 ```
 id          username    
@@ -121,7 +122,7 @@ id          username
 4           aapeli    
 ```
 
-Even though the column does not exist anymore, we can still count the amount of friends like this:
+Vaikka saraketta ei enää ole, voimme silti laskea ystävien määrän täten:
 
 ```sql
 SELECT COUNT(*)
@@ -129,31 +130,34 @@ FROM Users A, Friends K
 WHERE A.username='uolevi' AND k.user = A.id;
 ```
 
-# Normalisation
+# Normalisointi (Normalization)
 
-In the theory of database is often used the term *normalization*, which is used to make the structure of a database better. This is done by altering the database in such a way, that it implements certain *normal forms*.
+Tietokannan teoriassa puhutaan usein termistä *normalisointi (normalization)*, jonka avulla tietokannan rakennetta parannetaan. Tämä tapahtuu muuttamalla tietokannan rakennetta siten, että se vastaa tiettyjä *normaalimuotoja (normal forms*.
 
-In practice, normalization leads to the same result as the principles above, but the requirements for normal forms are a bit vague. If you want to spend some time with database theory, you might delve deeper into normal forms. Otherwise the principles above are quite sufficient.
+Käytännössä, normalisointi johtaa samoihin tuloksiin kuin yllä olevat periaatteet, mutta normaalimuotojen vaatimukset ovat hieman tulkinnanvaraiset. Jos haluat käyttää hieman aikaa tietokantojen teoriaan, kannattaa tutustua tarkemmin normaalimuotoihin. Muutoin yllä olevat periaatteet ovat melkoisen riittävät.
 
-# Depicting structure
+# Tiedon kuvailu
 
-Next we shall handle two ways to depict database structure. A graphical database diagram shows the database tables, columns and the references between them, whereas SQL schema shows the SQL commands used to create the tables.
+Seuraavaksi käsittelemme kaksi tapaa kuvailla tietokannan rakennetta. Graafinen kuvaus näyttää tietokannan taulut, sarakkeet ja viitteet niiden välillä, kun taas SQL-skeema näyttää tietokannan luomiseen käytetyt SQL-komennot.
 
-## Database diagram
+
+## Tietokantakaavio (Database diagram)
+
+Tietokantakaavio on graafinen esitys tietokannasta, jossa jokainen taulu on laatikko joka sisältää taulun nimen ja sarakkeet listana. Viittaukset rivien välillä näytetään yhteyksinä laatikoiden välillä.
 
 A database diagram is a graphical representation of a database, where every table is a box containing the name of the table and the columns as a list. The refences between the rows are shown as connections between the boxes.
 
-There are several tools to draw database diagrams. This picture was done with an online tool [https://dbdiagram.io/](https://dbdiagram.io/d):
+Tietokantakaavion piirtämiseen on monia vähän erilaisia tapoja. Seuraava kaavio on luotu netissä olevalla työkalulla [https://dbdiagram.io/](https://dbdiagram.io/d):
 
 ![Database diagram of a simple three table Database](https://raw.githubusercontent.com/centria/databases/master/src/images/diagram_new.png) 
 
-Here the notation `1` means that the columns has a different value for each row, and the notation `*` means that the column can have the same value on multiple rows. For example in the table `Products` each row has different `id`, but in the table `Purchases` multiple rows can have the same `product_id`.
+Tässä merkki `1` tarkoittaa, että sarakkeessa on eri arvo joka rivillä, ja merkki `*` puolestaan tarkoittaa, että sarakkeessa voi olla sama arvo usealla rivillä. Esimerkiksi taulussa `Products` jokaisella rivillä on eri `id`, mutta taulussa `Purchases` usealla rivillä voi olla sama `product_id`.
 
-## SQL schema
+## SQL-skeema (SQL schema)
 
-A SQL Schema is a text representation of the database, where we give the commands needed to create the database. The advantage of this form is that it is definately accurate, and we can recreate the database with it if wanted.
+SQL-skeema on tekstiesitys tietokannasta, joka antaa komennot joita tarvittiin tietokannan luomiseen. Hyvä puoli tässä esitysmuodossa on, että se on ehdottoman tarkka, ja voimme luoda tietokannan uudelleen niin halutessamme.
 
-For example the schema for the database above would be as follows:
+Esimerkiksi yllä olevan tietokannan skeema olisi seuraava:
 
 ```sql
 CREATE TABLE Products (id INTEGER PRIMARY KEY, name TEXT, price INTEGER);
@@ -161,7 +165,7 @@ CREATE TABLE Customers (id INTEGER PRIMARY KEY, name TEXT);
 CREATE TABLE Purchases (product_id INTEGER, customer_id INTEGER);
 ```
 
-If we assume this schema to be in a file `depiction.sql`. we can create the database with the SQLite interpreter with the command `.read`: 
+Oletetaan tämän skeeman olevan tiedostossa `depiction.sql`. Voimme luoda tietokannan SQLite-tulkilla komennolla `.read`: 
 
 ```
 sqlite> .read depiction.sql
@@ -169,7 +173,7 @@ sqlite> .tables
 Customers  Purchases   Products
 ```
 
-On the other hand we can also use the command `.schema` in the SQLite interpreter, which returns the current schema:
+Toisaalta voimme myös käyttää komentoa `.schema` SQLite-tulkissa, joka palauttaa tämänhetkisen skeeman:
 
 ```
 sqlite> .schema
@@ -178,19 +182,17 @@ CREATE TABLE Customers (id INTEGER PRIMARY KEY, name TEXT);
 CREATE TABLE Purchases (product_id INTEGER, customer_id INTEGER);
 ```
 
+# Tietokannan muuttaminen
 
+Käytännössä on epätavallista että tietokanta suunnitellaan ensin, ja että se pysyisi muuttumattomana maailmanloppuun asti. On paljon yleisempää, että tietokannan rakenne muuttuu silloin tällöin.
 
-# Changing database
+## Muutosten tekeminen
 
-In practice it is unusual that the database is designed first and then it stays unchanged until the end of times. It is much more common for the database structure to change every now and then.
+Yksinkertainen muutos on uuden taulun lisääminen tietokantaan. Tässä tapauksessa voimme lisätä taulun komennolla `CREATE TABLE` kuten tavallisesti.
 
-## Performing the changes
+Voimme myös muokata olemassaolevan taulun rakennetta komennolla `ALTER TABLE`. Tällä komennolla on useita käyttötarkoituksia, riippuen siitä mitä haluamme tehdä. Voimme esimerkiksi lisätä sarakkeen komennolla `ADD COLUMN`.
 
-A simple alteration is adding a new table to the database. In this case we can create the table with the command `CREATE TABLE` as usual.
-
-We can also change structure of an existing table with the command `ALTER TABLE`. This command has multiple uses, depending on what we want to do. For example we can add a column to the table with the command `ADD COLUMN`.
-
-Let's look at the table `Customers`:
+Tarkastellaan taulua `Customers`:
 
 ```
 id           name
@@ -200,13 +202,13 @@ id           name
 3            Aapeli
 ```
 
-When we want to add a new column `address`, we can run the following command:
+Kun haluamme lisätä uuden sarakkeen `address`, voimme ajaa seuraavan komennon:
 
 ```sql
 ALTER TABLE Customers ADD COLUMN address TEXT;
 ```
 
-This results with our table looking like this:
+Tämän seurauksena taulumme näyttää tältä:
 
 ```
 id           name        address
@@ -216,26 +218,29 @@ id           name        address
 3            Aapeli
 ```
 
-Since we added a new column, existing rows do not contain any information in that column. The data can be changed after this with the `UPDATE` command.
+Koska lisäsimme uuden sarakkeen, olemassaolevilla riveillä ei ole tietoa siinä sarakkeessa. Tietoa voidaan päivittää tämän jälkeen komennolla `UPDATE`.
 
-The usage of `ALTER TABLE` depends on the database system, and once again more information can be found from the database system documentation. In SQLite the command is quite limited, compared to for example PostgreSQL.
+Komennon `ALTER TABLE` käyttö riippuu tietokantajärjestelmästä, ja jälleen kerran tieto löytyy käytössä olevan järjestelmän dokumentaatiosta. SQLitessä komento on melko rajattu, verrattuna esimerkiksi PostgreSQL:ään.
 
 
-## Challenges in alterations
-Changing the structure of an existing database has one problem: The database usually has information and it is being used in some application. How can we implement the changes so, that they do not interfere the functionality of the system?
+## Muutoksen haasteet
 
-Adding a table or a column are usually quite easy changes, since they do not affect using the database in the old way, but more difficult changes are for example removing or changing the name of a column.
+Olemassaolevan tietokannan muutoksissa on yksi ongelma: Tietokannassa on yleensä tietoja ja se on käytössä jossain sovelluksessa. Kuinka voimme toteuttaa muutokset siten, että ne eivät vaikuta järjestelmän toimivuuteen?
 
-One good principle is to do changes gradually, or step by step. For example, if you have to change the name of a column, you can do it like this:
+Taulun tai sarakkeen lisääminen ovat yleensä melko helppoja muutoksia, sillä ne eivät vaikuta tietokannan käyttämiseen vanhalla tavalla, mutta haastavampia muutoksia ovat esimerkiksi sarakkeen poistaminen tai uudelleenimeäminen.
 
-1. Add a new column alongside the old column
-2. Change the SQL commands *writing* the data so, that they save the data to both old and new column.
-3. Copy the data from the rows of the old column to the new one.
-4. Change the SQL commands *reading* the data so, that they read from the new column.
-5. Change the SQL commands *writing* the data so, that they save the data to only the new column.
-6. Remove the old column from the table.
+Yksi hyvä periaate on tehdä muutokset vaiheittain, askel kerrallaan. Esimerkiksi, jos tarvitsee muuttaa sarakkeen nimeä, voit tehdä sen näin:
 
-With this procedure the system can use the database the whole time, and the system user does not notice the change. At the end of the process the name of the column has been changed to a new one.
+1. Lisää uusi sarake vanhan sarakkeen rinnalle 
+2. Muuta *tietoa kirjoittavat* SQL-komennot siten, että ne kirjoittavat sekä vanhaan että uuteen sarakkeeseen.
+3. Kopioi data vanhan sarakkeen riveiltä uuden sarakkeen vastaaviin.
+4. Muuta *tietoa lukevat* SQL-komennot siten, että ne lukevat uudesta sarakkeesta.
+5. Mutta *tietoa kirjoittavat* SQL-komennot siten, että ne kirjoittavat vain uuteen sarakkeeseen.
+6. Poista vanha sarake taulusta.
 
-# Migration
-The term *migration* can mean either changing the structure of a database or moving the database information to another location. This is beyond the scope of this course, unfortunately.
+Tällä menetelmällä järjestelmä pystyy käyttämään tietokantaa koko ajan, ja tietokannan käyttäjät eivät huomaa muutosta. Prosessin lopuksi sarakkeen nimi on muutettu uudeksi.
+
+# Migraatio (Migration)
+
+Termi *migraatio* voi tarkoittaa joko tietokannan rakenteen muuttamista tai tietokannan siirtämistä toiseen sijaintiin. Tämä on valitettavasti kurssimme tavoitteiden ulkopuolella..
+
