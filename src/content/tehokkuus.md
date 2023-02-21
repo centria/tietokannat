@@ -4,21 +4,21 @@ nav_order: 9
 hidden: false
 ---
 
-# Executing a query
+# Kyselyjen suoritus
 
-SQL is nice to the user for making queries, as the user only has to describe what information they wish to retrieve, and the database system does the rest. Thus it is crucial for the database system to find a reasonably efficient way to implement the user's query and deliver the results to the user.
+SQL-kieli on tietokannan käyttäjälle mukava kyselyjen tekemisessä, koska käyttäjän riittää kuvata, mitä tietoa hän haluaa hakea, ja tietokantajärjestelmä hoitaa loput. Niinpä tietokantajärjestelmän on tärkeää pystyä löytämään jokin tehokas tapa toteuttaa käyttäjän antama kysely ja toimittaa kyselyn tulokset käyttäjälle.
 
-## Explain! Explain!
+## Kyselyn suunnitelma (Explain)
 
-Many database systems have a choice of explaining the plan, how it intends to run the given query. With this we can examine the interal functionality of the system.
+Monet tietokantajärjestelmät kertovat pyydettäessä suunnitelmansa, miten annettu kysely aiotaan suorittaa. Tämän avulla voimme tutkia tietokantajärjestelmän sisäistä toimintaa.
 
-Let's examine a query, which retrieves the information for `radish` from the table `Products`:
+Tarkastellaan esimerkkinä kyselyä, joka hakee retiisin tiedot taulusta `Products`:
 
 ```
 SELECT * FROM Products WHERE name='radish';
 ```
 
-When we add the word `EXPLAIN` before the query in SQLite, we can get the following kind of representation, how the query is planned to run:
+Kun laitamme SQLitessä kyselyn eteen sanan `EXPLAIN`, saamme seuraavan tapaisen selostuksen suunnitelmasta:
 
 ```
 sqlite> EXPLAIN SELECT * FROM Products WHERE name='radish';
@@ -42,64 +42,69 @@ addr  opcode         p1    p2    p3    p4             p5  comment
 15    Goto           0     1     0                    00 
 ```
 
-SQLite transforms the query into an internal *program*, which retrieves the information from the tables. In this case the program execution begins from the line 12, where we begin the transaction, and on row 14 we place the string "radish" from our query into the register 2. After this the execution moves to row 1, where it begins the handling for table `Products`, and rows from 2 to 9 form a loop, which searches for a matching row from the table.
+SQLite muuttaa kyselyn tietokannan sisäiseksi *ohjelmaksi*, joka hakee tietoa tauluista. Tässä tapauksessa ohjelman suoritus alkaa riviltä 12, jossa alkaa transaktio, ja sitten rivillä 14 rekisteriin 2 sijoitetaan hakuehdossa oleva merkkijono "radish". Tämän jälkeen suoritus siirtyy riville 1, jossa aloitetaan taulun `Products` käsittely, ja rivit 2–9 muodostavat silmukan, joka etsii hakuehtoa vastaavat rivit taulusta.
 
-We can ask for more compact plan with the keywords `EXPLAIN QUERY PLAN`. Then the result is something in the line of:
+Voimme myös pyytää tiiviimmän suunnitelman laittamalla kyselyn eteen sanat `EXPLAIN QUERY PLAN`. Tällöin tulos voi olla seuraava:
+
 
 ```
 sqlite> EXPLAIN QUERY PLAN SELECT * FROM Products WHERE name='radish';
 0|0|0|SCAN TABLE Products
 ```
 
-Here `SCAN TABLE Products` means that the query goes through the table `Products`.
+Tässä `SCAN TABLE Products` tarkoittaa, että kysely käy läpi taulun `Products` rivit.
 
-## Optimizing a query
-If a query retrieves data from only a single table, the query is usually quite simple to execute, but the real problems come when we make queries to multiple tables. Then the database system should be able to optimize query execution, or form a good plan, with which the desired information can be collected from the tables efficiently.
 
-Let's examine a query which lists course and teacher names:
+## Kyselyn optimointi (Optimizing a query)
+
+Jos kyselyssä haetaan tietoa vain yhdestä taulusta, kysely on yleensä helppo suorittaa, mutta todelliset haasteet tulevat vastaan usean taulun kyselyissä. Tällöin tietokantajärjestelmän tulee osata *optimoida (optimize)* kyselyn suorittamista eli muodostaa hyvä suunnitelma, jonka avulla halutut tiedot saadaan kerättyä tehokkaasti tauluista.
+
+Tarkastellaan esimerkkinä seuraavaa kyselyä, joka listaa kurssien ja opettajien nimet:
 
 ```sql
 SELECT C.name, T.name FROM Courses C, Teachers T WHERE C.teacher_id = T.id;
 ```
 
-As the query focuses on two table, we have thought about the query functionality so, that it first creates the combination of all the rows from the tables `Courses` and `Teachers` and then selects those rows, which satisfy the condition `C.teacher_id = T.id`. This is a good way to think, but this does not actually reflect the functionality of a proper database system.
+Koska kysely kohdistuu kahteen tauluun, olemme ajatelleet kyselyn toiminnan niin, että se muodostaa ensin kaikki rivien yhdistelmät tauluista `Courses` ja `Teachers` ja valitsee sitten ne rivit, joilla pätee ehto `C.teacher_id = T.id`. Tämä on hyvä ajattelutapa, mutta tämä ei vastaa sitä, miten kunnollinen tietokantajärjestelmä toimii.
 
-The issue is that both `Courses` and `Teachers` could have a large amount of rows. For example if both tables have a million rows, the combination of both would be million millions, and it would take an enormous time to go through all the combinations.
+Ongelmana on, että tauluissa `Courses` ja `Teachers` voi molemmissa olla suuri määrä rivejä. Esimerkiksi jos kummassakin taulussa on miljoona riviä, rivien yhdistelmiä olisi miljoona miljoonaa ja veisi valtavasti aikaa muodostaa ja käydä läpi kaikki yhdistelmät.
 
-In this situation the database system has to understand, what the user is actually searching for and how the condition limits the result set. Practically it is enough to go through all the rows from table `Courses` and with each row search somehow efficiently the desired row from the table `Teachers`.
+Tässä tilanteessa tietokantajärjestelmän pitääkin ymmärtää, mitä käyttäjä oikeastaan on hakemassa ja miten kyselyssä annettu ehto rajoittaa tulosrivejä. Käytännössä riittää käydä läpi kaikki taulun `Courses` rivit ja etsiä jokaisen rivin kohdalla jotenkin tehokkaasti yksittäinen haluttu rivi taulusta `Teachers`.
 
-We can once more ask SQLite to explain the plan for the query:
+Voimme taas pyytää SQLiteä selittämään kyselyn suunnitelman:
+
 ```
 sqlite> EXPLAIN QUERY PLAN SELECT C.name, T.name FROM Courses C, Teachers T WHERE C.teacher_id = T.id;
 0|0|0|SCAN TABLE Courses AS C
 0|1|1|SEARCH TABLE Teachers AS T USING INTEGER PRIMARY KEY (rowid=?)
 ```
 
-This query iterates through the table `Courses` rows (`SCAN TABLE Courses`) and retrieves information from `Teachers` with the primary key (`SEARCH TABLE Teachers`). The latter means that while processing a certain row from `Courses`, the query efficiently searches from `Teachers` where the primary key `T.id` is same as `C.teacher_id`.
+Tämä kysely käy läpi taulun `Courses` rivit (`SCAN TABLE Courses`) ja hakee tietoa taulusta `Teachers` pääavaimen avulla (`SEARCH TABLE Teachers`). Jälkimmäinen tarkoittaa, että kun käsittelyssä on tietty taulun `Courses` rivi, kysely hakee tehokkaasti taulusta `Teachers` rivin, jossa pääavain `T.id` on sama kuin `C.teacher_id`.
 
-But how can we search `Teachers` efficiently? This is done by indeksin, which we will look into next.
+Mutta miten käytännössä taulusta `Teachers` voi hakea tehokkaasti? Tämä onnistuu käyttämällä indeksiä, joihin tutustumme heti seuraavaksi.
 
-# Indexes
+# Indeksit
 
-*Index* is a datastructure saved alongside the database table, whose function is to make the queries to said table more efficient. With an index a database system can efficiently solve, where in the table are the rows which match a certain query condition.
+*Indeksi* on tietokannan taulun yhteyteen tallennettu hakemistorakenne, jonka tavoitteena on tehostaa tauluun liittyvien kyselyiden suorittamista. Indeksin avulla tietokantajärjestelmä voi selvittää tehokkaasti, missä päin taulua on rivejä, jotka täsmäävät tiettyyn hakuehtoon.
 
-## Primary key index
+## Pääavaimen indeksi (Primary key index)
 
-When a table is created in a database, the primary key automatically receives an index. Because of this we can efficiently perform queries, where the condition involves the primary key.
+Kun tietokantaan luodaan taulu, sen pääavain saa automaattisesti indeksin. Tämän seurauksena voimme suorittaa tehokkaasti hakuja, joissa ehto liittyy pääavaimeen.
 
-For example if we crate this table in SQLite
+Esimerkiksi kun luomme SQLitessä taulun
 
 ```sql
 CREATE TABLE Products (id INTEGER PRIMARY KEY, name TEXT, price INTEGER);
 ```
 
-An index is created for the column `id` and we can search efficiently products based on their id. Because of this for example the next query is efficient:
+niin taululle luodaan indeksi sarakkeelle `id` ja voimme etsiä tehokkaasti tuotteita id-numeron perusteella. Tämän ansiosta esimerkiksi seuraava kysely toimii tehokkaasti:
 
 ```sql
 SELECT price FROM Products WHERE id=3;
 ```
 
-We can confirm the efficiency with the explanation:
+Voimme varmistaa tämän kysymällä kyselyn suunnitelman:
+
 
 ```
 sqlite> EXPLAIN QUERY PLAN SELECT price FROM Products WHERE id=3;
@@ -108,17 +113,18 @@ selectid    order       from        detail
 0           0           0           SEARCH TABLE Products USING INTEGER PRIMARY KEY (rowid=?)
 ```
 
-The plan contains `SEARCH TABLE` which means the query can search the table with an index efficiently.
+Suunnitelmassa näkyy `SEARCH TABLE`, mikä tarkoittaa, että kysely pystyy hakemaan taulusta tietoa tehokkaasti indeksin avulla.
 
-## Creating an index
+## Indeksin luominen
 
-The primary key index is handy, but we might want to search information with other columns as well. For example the following query retrieves the rows with the `price` column:
+Pääavaimen indeksi on kätevä, mutta voimme haluta myös etsiä tietoa jonkin muun sarakkeen perusteella. Esimerkiksi seuraava kysely hakee rivit sarakkeen `price` perusteella:
+
 
 ```sql
 SELECT name FROM Products WHERE price=4;
 ```
 
-This is not efficient by default, as the column `price` does not have an index. We can once again check this with an explanation:
+Tämä kysely ei ole oletuksena tehokas, koska sarakkeelle `price` ei ole indeksiä. Näemme tämän pyytämällä taas selitystä kyselystä:
 
 ```
 sqlite> EXPLAIN QUERY PLAN SELECT name FROM Products WHERE price=4;
@@ -127,21 +133,25 @@ selectid    order       from        detail
 0           0           0           SCAN TABLE Products
 ```
 
-Now the plan contains `SCAN TABLE` which means the query has to iterate through all the rows in the table. This is slow, if the table contains many rows.
+Nyt suunnitelmassa näkyy `SCAN TABLE`, mikä tarkoittaa, että kysely joutuu käymään läpi taulun kaikki rivit. Tämä on hidasta, jos taulussa on paljon rivejä.
 
-We can create a new index, which makes the queries via column `price` more efficient. We can create an index with `CREATE INDEX` as follows:
+Voimme kuitenkin luoda uuden indeksin, joka tehostaa saraketta `price` käyttäviä kyselyitä. Saamme luotua indeksin komennolla `CREATE INDEX` näin:
+
 
 ```sql
 CREATE INDEX idx_price ON Products (price);
 ```
 
-Here the `idx_price` is the name of the index, with which we can refer to it later. The index works automatically after the creation, so the database system can use it in queries and takes care of updating it.
+Tässä `idx_price` on indeksin nimi, jolla voimme viitata siihen myöhemmin. Indeksi toimii luonnin jälkeen täysin automaattisesti, eli tietokantajärjestelmä osaa käyttää sitä kyselyissä ja huolehtii sen päivittämisestä.
 
-## How does the index work?
 
-Index requires a data structure, which can be efficiently searched through based on the values for the rows in the column. This can be achieved with for example a tree structure, where the keys are column values.
+## Miten indeksi toimii?
 
-After creating the index, we can again ask for the plan:
+
+Indeksi tarvitsee tuekseen hakemistorakenteen, josta voi hakea tehokkaasti rivejä sarakkeen arvon perusteella. Tämä voidaan toteuttaa esimerkiksi puurakenteena, jonka avaimina on sarakkeiden arvoja.
+
+Indeksin luomisen jälkeen voimme kysyä uudestaan kyselyn suunnitelmaa:
+
 
 ```
 sqlite> EXPLAIN QUERY PLAN SELECT name FROM Products WHERE price=4;
@@ -150,68 +160,70 @@ selectid    order       from        detail
 0           0           0           SEARCH TABLE Products USING INDEX idx_price (price=?)
 ```
 
-Because of the index the `SCAN TABLE` has been replaced with `SEARCH TABLE`. In the plan you can also see, that it uses the new index `idx_price` in the search.
+Indeksin ansiosta suunnitelmassa ei lue enää `SCAN TABLE` vaan `SEARCH TABLE`. Suunnitelmassa näkyy myös, että aikomuksena on hyödyntää indeksiä `idx_price`.
 
-## More uses
+## Lisää käyttötapoja
 
-We can also use indexes in queries, where we retrieve smaller or larger values. For example with the index created for the column `price` we can for example search for rows with which applies the condition `price<3` or `price>=8`.
+Voimme käyttää indeksiä myös kyselyissä, joissa haemme pienempiä tai suurempia arvoja. Esimerkiksi sarakkeelle `price` luodun indeksin avulla voimme etsiä vaikkapa rivejä, joille pätee ehto `price<3` tai `price>=8`.
 
-An index can also be created based on several columns. We could create an index with for example:
+Indeksi on myös mahdollista luoda usean sarakkeen perusteella. Esimerkiksi voisimme luoda indeksin näin:
 
 ```sql
 CREATE INDEX idx_price ON Products (price,name);
 ```
 
-In this index the rows are ordered primarily by `price` and secondarily by `name`. The index enhances the queries, where the search condition is either just `price` or the combination of `price` and `name`. This index does not help queries where the search is based purely on `name`.
+Tässä indeksissä rivit on järjestetty ensisijaisesti hinnan ja toissijaisesti nimen mukaan. Indeksi tehostaa hakuja, joissa hakuperusteena on joko pelkkä hinta tai yhdessä hinta ja nimi. Kuitenkaan indeksi ei tehosta hakuja, joissa hakuperusteena on pelkkä nimi.
 
-## When to create an index?
 
-In theory you might think that it is good to create an index for all the columns of all the tables, and boost all the queries possible. In practice this is not a good idea.
+## Milloin luoda indeksi?
 
-Even though indexes boost queries, they come with two drawbacks: The data structure required for a tree takes space, and indexing slows down adding and changing data. The latter is because when the data in the table is changed, the change has to be updated also to all teh indexes associated with the table. We shouldn't be creating indexes just because we can.
+Periaatteessa voisi ajatella, että taulun jokaiselle sarakkeelle kannattaa luoda indeksi, jolloin monenlaiset kyselyt ovat nopeita. Tämä ei ole kuitenkaan käytännössä hyvä idea.
 
-A good reason for indexing is, if we want to run certain types of queries often and they are slow because the database system has to go through all the rows in a table during the query. In this situation we could add an index for the table, so this sort of query would be faster in the future.
+Vaikka indeksit tehostavat kyselyitä, niissä on myös kaksi ongelmaa: indeksin hakemistorakenne vie tilaa ja indeksi myös hidastaa tiedon lisäämistä ja muuttamista. Jälkimmäinen johtuu siitä, että kun taulun sisältö muuttuu, niin muutos täytyy myös päivittää kaikkiin tauluun liittyviin indekseihin. Indeksiä ei siis kannata luoda huvin vuoksi.
 
-Indexing has quite an impact on database efficiency. Many a databases work slowly, because they are missing crucial indexes. The balance between enough indexes and too many indexes is a delicate one, but should be taken into consideration while developing databases.
+Hyvä syy indeksin luontiin on, että haluamme suorittaa usein tietynlaisia kyselyitä ja ne toimivat hitaasti, koska tietokantajärjestelmä joutuu käymään läpi turhaan jonkin taulun kaikki rivit kyselyn aikana. Tällöin voimme lisätä taululle indeksin, jonka avulla tällaiset kyselyt toimivat jatkossa tehokkaasti.
 
-# Repetitive information
+Indekseillä on käytännössä suuri vaikutus tietokantojen tehokkuuteen. Moni tietokanta toimii hitaasti sen takia, että siitä puuttuu oleellisia indeksejä. Tasapaino riittävien ja liian monen indeksin välillä on herkkä, ja pitäisi ottaa huomioon tietokantojen kehityksessä.
 
-Idealistic situation in database design is that databases do not contain repetitive information, which could be deducted from other information in the database. Sometimes we have to bend a little of this principle to make queries more efficient.
 
-## Example
+# Tiedon toisteisuus
 
-Let's look at a bank database, where the table `Tranactions` contains information about account transactions. With each transaction there is a column `change` which indicates how much the balance changes (so it can be either positive or negative).
+Ideaalitilanteessa tietokantaa suunnitellessa tietokanta ei sisällä toisteista tietoa, joka pystyttäisiin päättelemään toisaalta tietokannassa. Joskus meidän täytyy hieman taivuttaa tätä sääntöä tehdäksemme kyselyistämme tehokkaampia.
 
-The following example returns the current balance of account number 123 by counting together all the changes associated with the account:
+## Esimerkki
+
+Tarkastellaan pankin tietokantaa, jossa taulu `Transactions` sisältää tietoa tilisiirroista. Jokaiselle siirrolle on sarake `change` joka indikoi kuinka paljon tilin tase muuttuu (eli arvo voi olla positiivinen tai negatiivinen).
+
+Seuraava esimerkki palauttaa tilin tämänhetkisen saldon tilille 123 laskemalla yhteen kaikki tiliin liittyvät muutokset:
 
 ```sql
 SELECT SUM(change) FROM Transactions WHERE account_id=123;
 ```
 
-This is a nice query per se, but it has to go through all the rows associated with the account 123 from the table `Transactions` to find the current balance. This is kind of unneccessary work, as we are not interested in the history but only the balance.
+Tämä on sinänsä hyvä kysely, mutta sen pitää käydä läpi kaikki tiliin 123 liittyvät rivit taulusta `Transactions` löytääkseen nykyisen saldon. Tämä on melkolailla ylimääräistä työtä, sillä meitä ei kiinnosta historia vaan ainoastaan saldo.
 
-We can make the query more efficient by creating a new table `Balances` which contains the balance of each account. With this account we can retrieve the balance of account 123 this easily:
+Voimme tehdä kyselystä tehokkaamman luomalla uuden taulun `Balances`, joka sisältää tilien saldot. Tämän taulun avulla voimme hakea saldon tilille 123 näin helposti:
 
 ```sql
 SELECT balance FROM Balances FROM account_id=123;
 ```
 
-Here we break the principle that a database should not contain information that can be counted from other information in the database, as the information in table `Balances` could be calculated from a row in the table `Transactions`. This way though we can make much more efficient query.
+Tässä rikomme periaatetta, että tietokannassa ei pitäisi olla tietoa joka voidaan laskea muualta tietokannasta, sillä taulu `Balances` pystytään laskemaan taulusta `Transactions`. Tällä tavoin tosin voimme tehdä todella paljon tehokkaamman kyselyn.
 
-What's wrong with breaking the principle? Well, we just made updating the database harder. Every time we now add a new row to table `Transactions`, we also have to make a change to table `Balances`. Previously the balance was calculated directly from the transactions, why it was always current.
+Mitä vikaa on periaatteen rikkomisessa? No, teimme juuri tietokannan päivittämisestä hankalampaa. Joka kerta kun nyt lisäämme uuden rivin tauluun ``Transactions`, joudumme myös päivittämään tietoa taulussa `Balances`. Aiemmin saldo laskettiin suoraan tilisiirroista, joka oli aina ajantasalla.
 
-## Denormalization
+## Denormalisointi (Denormalization)
 
-In database theory the term *denormalization* is used, which means making queries more efficient by adding repetitive information. This time we are doing quite the oppisite than with normalization.
+Tietokantojen teoriassa käytetään termiä *denormalisointi (denormalization)*, mikä tarkoittaa kyselyiden tehostamista lisäämällä toisteista tietoa. Tällä kertaa teemme siis melko päinvastaista kuin normalisoidessa.
 
-## Changes vs Queries
+## Muutokset vastaan kyselyt
 
-Often occuring phenomenon in computer science is that we have to balance if we prefer to retrieve or update data efficiently, and how much space can we use. This is familiar from for example algorithms.
+Usein esiintyvä ilmiö tietotekniikassa on, että joudumme tasapainoilemaan sen kanssa, haluammeko muuttaa vai hakea tehokkaasti tietoa ja paljonko tilaa voimme käyttää. Tämä tulee tietokantojen lisäksi vastaan esimerkiksi algoritmien suunnittelussa.
 
-If a database does not contain repetitive information the, changes are easy as each piece of information is stored only in one place, so we only need to change one row. The database also takes up little space, which is desired. On the other hand the queries can be complicated and slow, as the information has to be gathered from different parts of the database.
+Jos tietokannassa ei ole toisteista tietoa, muutokset ovat helppoja, koska jokainen tieto on vain yhdessä paikassa eli riittää muuttaa vain yhden taulun yhtä riviä. Myös hyvänä puolena tietokanta vie vähän tilaa. Toisaalta kyselyt voivat olla monimutkaisia ja hitaita, koska halutut tiedot pitää kerätä kasaan eri puolilta tietokantaa.
 
-When we add repetitive information, we can speed up the queries but then again the changes get slower, as the changed information has to be updated to several places. At the same time the space requirement for the database grows.
+Kun sitten lisäämme toisteista tietoa, pystymme nopeuttamaan kyselyjä mutta toisaalta muutokset hidastuvat, koska muutettu tieto pitää päivittää useaan paikkaan. Samaan aikaan myös tietokannan tilankäyttö kasvaa toisteisen tiedon takia.
 
-Unfortunately there is no general rule, how much repetitive information is necessary to add, but it depends on the usage and content of the database. One approach could be starting with no repetitive information, and add repetition when it is apparent the required queries are not efficient enough.
+Valitettavasti ei ole mitään yleistä sääntöä, paljonko toisteista tietoa kannattaa lisätä, vaan tämä riippuu tietokannan sisällöstä ja halutuista kyselyistä. Yksi hyvä tapa on aloittaa tilanteesta, jossa toisteista tietoa ei ole, ja lisätä sitten toisteista tietoa tarvittaessa, jos osoittautuu, että kyselyt eivät muuten ole riittävän tehokkaita.
 
-Notice, that indexing is also one example of how repetitive information can make queries more efficient. In those the repetitive information is not stored in the tables, but outside the table in a data structure of their own.
+Huomaa, että indeksointi on myös yksi esimerkki kuinka toisteinen tieto tekee kyselyistä tehokkaampia. Tällöin toisteinen tieto ei ole talletettu tauluihin, vaan taulujuen ulkopuolelle omiin tietorakenteisiinsa.
