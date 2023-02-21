@@ -283,8 +283,6 @@ Kun lisäämme kyselyn loppuun `LIMIT x`, kysely antaa vain `x` ensimmäistä tu
 
 Yleisempi muoto on `LIMIT x OFFSET y`, mikä tarkoittaa, että haluamme `x` riviä kohdasta `y` alkaen (0-indeksoituna). Esimerkiksi `LIMIT 3 OFFSET 1` tarkoittaa, että kysely antaa toisen, kolmannen ja neljännen tulosrivin.
 
-A more common form is `LIMIT x OFFSET y`, which means that we want `x` rows starting from position `y` (with 0 indexing, of course). For example `LIMIT 3 OFFSET 1` means that the result set contains second, third and fourth rows.
-
 ## Esimerkki
 
 Tarkastellaan esimerkkinä kyselyä, joka hakee tuotteita halvimmasta kalleimpaan:
