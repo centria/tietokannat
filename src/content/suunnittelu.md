@@ -25,7 +25,7 @@ Jokainen tietue on tietokannassa tasan kerran. Muualla tähän tietoon viitataan
 Tietokanta ei sisällä tietoa, joka voidaan laskea tai päätellä muusta tietokannan sisällöstä.
 
 
-## Example
+## Esimerkki
 
 Tarkastellaan tilannetta, jossa verkkosivulla on käyttäjiä ja jokaisella käyttäjällä on lista ystäviä. Tässä näemme melko huonosti suunnitellun taulun `Users`, joka sisältää tietoa käyttäjistä ja heidän ystävistään:
 
