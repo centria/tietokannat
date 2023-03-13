@@ -32,7 +32,7 @@ Monessa tietokannassa on suuri määrä tietoa, johon kohdistuu jatkuvasti hakuj
 
 ## Samanaikaisuus (Concurrency)
 
-Usually a database has multiple users, who can change and get information at the same time. Why do we have to take this into account, when designing our database?
+Yleensä tietokannalla on useita käyttäjiä, jotka voivat muuttaa ja hakea tietoa samaan aikaan. Miten otamme tämän huomioon, kun suunnittelemme tietokantaamme?
 
 ## Yllätykset (Surprises)
 
