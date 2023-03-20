@@ -90,9 +90,7 @@ Tämän jälkeen voimme luottaa siihen, että taulussa `Courses` sarakkeen `teac
 
 ## Viiteavaimet SQLitessä
 
-Voimmeko oikeasti luottaa, että viiteavaimet toimivat halutulla tavalla?
-
-Can we actually trust, that the reference keys work in the desired ways? Historiallisista syistä SQLite ei oletuksena valvo viiteavainten ehtoja, vaan meidän tulee ensin suorittaa seuraava komento:
+Voimmeko oikeasti luottaa, että viiteavaimet toimivat halutulla tavalla? Historiallisista syistä SQLite ei oletuksena valvo viiteavainten ehtoja, vaan meidän tulee ensin suorittaa seuraava komento:
 
 ```
 sqlite> PRAGMA foreign_keys = ON;
