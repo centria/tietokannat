@@ -36,10 +36,6 @@ SELECT price FROM Products WHERE name='radish';
 
 on neljä lauseketta: `name`, `price`, `'radish'` ja `name='radish'`. Lausekkeet hinta ja nimi saavat arvonsa rivin sarakkeesta, lauseke `'radish'` on merkkijonovakio ja lauseke `name='radish'` on totuusarvoinen.
 
-
-
-Has two statements: `price` and `name='radish'`. In this the statement `price` defines the content of the result set, and the statement `name='radish'` is a conditional statement to limit the query.
-
 Voimme rakentaa monimutkaisempia lausekkeita samaan tapaan kuin ohjelmoinnissa. Esimerkiksi kysely
 
 ```sql
