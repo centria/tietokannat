@@ -13,7 +13,7 @@ Kurssille osallistuaksesi sinun ei tarvitse olla Centria-ammattikorkeakoulun opi
 
 ## Rekisteröityminen avoimen opiskelijana
 
-Voit rekisteröityä kurssille [TÄÄLLÄ](https://koulutus.centria.fi/koulutukset/software-development/).
+Voit rekisteröityä kurssille [TÄÄLLÄ](https://ella.eduplan.fi/centria).
 
 <Note>Centrian opiskelijat eivät ilmoittaudu avoimeen, vaan Pepin kautta!</Note>
 

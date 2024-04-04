@@ -46,7 +46,7 @@ Jos et tarvitse virallisia opintopisteitä, sinun ei tarvitse tehdä koetta. Koe
 
 ### Avoimen koe
 
-Päästäksesi tekemään kokeen, rekisteröidy Centrian avoimeen tältä sivulta: https://koulutus.centria.fi/koulutukset/software-development/.
+Päästäksesi tekemään kokeen, rekisteröidy Centrian avoimeen tältä sivulta: https://ella.eduplan.fi/centria.
 
 Jos haluat viralliset opintopisteet, sinun täytyy rekisteröityä avoimeen, tai olla Centrian opiskelija.
 
