@@ -145,8 +145,6 @@ Seuraavaksi käsittelemme kaksi tapaa kuvailla tietokannan rakennetta. Graafinen
 
 Tietokantakaavio on graafinen esitys tietokannasta, jossa jokainen taulu on laatikko joka sisältää taulun nimen ja sarakkeet listana. Viittaukset rivien välillä näytetään yhteyksinä laatikoiden välillä.
 
-A database diagram is a graphical representation of a database, where every table is a box containing the name of the table and the columns as a list. The refences between the rows are shown as connections between the boxes.
-
 Tietokantakaavion piirtämiseen on monia vähän erilaisia tapoja. Seuraava kaavio on luotu netissä olevalla työkalulla [https://dbdiagram.io/](https://dbdiagram.io/d):
 
 ![Database diagram of a simple three table Database](https://raw.githubusercontent.com/centria/databases/master/src/images/diagram_new.png) 
