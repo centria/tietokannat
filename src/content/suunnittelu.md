@@ -147,7 +147,7 @@ Tietokantakaavio on graafinen esitys tietokannasta, jossa jokainen taulu on laat
 
 Tietokantakaavion piirtämiseen on monia vähän erilaisia tapoja. Seuraava kaavio on luotu netissä olevalla työkalulla [https://dbdiagram.io/](https://dbdiagram.io/d):
 
-![Database diagram of a simple three table Database](https://raw.githubusercontent.com/centria/databases/master/src/images/diagram_new.png) 
+![Database diagram of a simple three table Database](https://raw.githubusercontent.com/centria/tietokannat/master/src/images/diagram_new.png) 
 
 Tässä merkki `1` tarkoittaa, että sarakkeessa on eri arvo joka rivillä, ja merkki `*` puolestaan tarkoittaa, että sarakkeessa voi olla sama arvo usealla rivillä. Esimerkiksi taulussa `Products` jokaisella rivillä on eri `id`, mutta taulussa `Purchases` usealla rivillä voi olla sama `product_id`.
 
