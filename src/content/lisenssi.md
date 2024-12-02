@@ -6,7 +6,7 @@ hidden: true
 
 Kurssirakenne ja materiaalit perustuvat [**Helsingin yliopiston**](https://www.helsinki.fi/) ja [**Antti Laaksosen**](https://github.com/pllk) kurssiin [**Tietokantojen perusteet**](https://tikape.mooc.fi/kevat-2021/). 
 
-Tämän materiaalin on muokannut kyseisestä materiaalista [**Heikki Ahonen**](https://github.com/heikkihei); tämän materiaalin lisenssi on [**CC BY-NC-SA 4.0**](https://creativecommons.org/licenses/by-nc-sa/4.0/deed). Lisätietoja alkuperäisestä materiaalista ja sen lisenssistä löytyy [**täältä**](https://tikape.mooc.fi/kevat-2021/pages/materiaali.html).
+Tämän materiaalin on muokannut kyseisestä materiaalista [**Heikki Ahonen**](https://github.com/heikkihei) 2020-2024; 2025 alkaen Tero Niemi; tämän materiaalin lisenssi on [**CC BY-NC-SA 4.0**](https://creativecommons.org/licenses/by-nc-sa/4.0/deed). Lisätietoja alkuperäisestä materiaalista ja sen lisenssistä löytyy [**täältä**](https://tikape.mooc.fi/kevat-2021/pages/materiaali.html).
 
 ## Virheitä materiaalissa?
 
